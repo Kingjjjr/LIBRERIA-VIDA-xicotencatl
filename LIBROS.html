@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Libros – Librería Vida</title>
+
+  <!-- Fuente & Favicon -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="icon" href="IMAGENES/favicon.png" type="image/png"/>
+
+  <!-- Estilos -->
+  <link rel="stylesheet" href="libros.css"/>
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="header">
+    <a class="logo" href="index.html" aria-label="Volver al inicio">
+      <img src="IMAGENES/LIB-VIDA.png" alt="Logo de Librería Vida" loading="eager" decoding="async">
+      <span>Librería <strong>Vida</strong></span>
+    </a>
+
+    <button class="menu-toggle" aria-label="Abrir menú" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+
+    <nav class="nav" aria-label="Navegación principal">
+      <a href="index.html">Inicio</a>
+      <a href="BIBLIAS.html">Biblias</a>
+      <a class="active" href="LIBROS.html" aria-current="page">Libros</a>
+      <a href="#contacto">Contacto</a>
+    </nav>
+
+    <!-- Papel picado (decorativo) -->
+    <div aria-hidden="true" style="width:100%;margin-top:12px">
+      <svg viewBox="0 0 1200 60" preserveAspectRatio="none" width="100%" height="60">
+        <defs>
+          <pattern id="pp" width="120" height="60" patternUnits="userSpaceOnUse">
+            <rect width="120" height="60" fill="#fef3c7"></rect>
+            <circle cx="20" cy="20" r="6" fill="#ef4444"></circle>
+            <circle cx="60" cy="20" r="6" fill="#10b981"></circle>
+            <circle cx="100" cy="20" r="6" fill="#3b82f6"></circle>
+            <path d="M0,60 60,0 120,60Z" fill="#fde68a" opacity="0.8"></path>
+          </pattern>
+        </defs>
+        <rect width="1200" height="60" fill="url(#pp)"></rect>
+      </svg>
+    </div>
+
+    <!-- ===== Carrito (mínimo requerido) ===== -->
+    <div id="cartBackdrop" hidden></div>
+
+    <button id="cartFab" class="cart-fab" type="button" aria-label="Abrir carrito" style="display:none">
+      🛒 <span class="cart-fab__badge" id="cartFabCount">0</span>
+    </button>
+
+    <!-- Mini–carrito (panel/drawer) -->
+    <button class="mini-cart__toggle" aria-expanded="false" hidden></button>
+    <aside id="miniCartPanel" class="mini-cart__panel" aria-live="polite">
+      <h4>Tu carrito</h4>
+      <ul id="cartItems" class="mini-cart__items"></ul>
+
+      <div class="mini-cart__row">
+        <span>Total:</span>
+        <span id="cartTotal">$0.00</span>
+      </div>
+
+      <div class="mini-cart__actions">
+        <button id="cartClear" class="btn ghost" type="button">Vaciar</button>
+        <button id="openCheckout" class="btn primary" type="button">Finalizar (WA)</button>
+      </div>
+    </aside>
+    <!-- ===== /Carrito ===== -->
+  </header>
+
+  <!-- Audio global -->
+  <audio id="fiestaAudio" preload="auto"></audio>
+
+  <!-- Migas -->
+  <nav class="breadcrumb" aria-label="Ruta de navegación">
+    <a href="index.html">Inicio</a>
+    <span aria-hidden="true">›</span>
+    <strong>Libros</strong>
+  </nav>
+
+  <!-- Toolbar -->
+  <section class="toolbar" aria-label="Herramientas de catálogo">
+    <div class="left-tools">
+      <button id="openFilters" class="btn filter-btn" type="button" aria-controls="filtersDrawer" aria-expanded="false">☰ Filtros</button>
+      <div class="searchbox">
+        <input id="search" type="search" placeholder="Buscar libro (ej. autor, título, devocional…)" aria-label="Buscar"/>
+      </div>
+    </div>
+    <div class="sorter">
+      <label for="sort">Ordenar:</label>
+      <select id="sort" aria-label="Ordenar productos">
+        <option value="relevance">Relevancia</option>
+        <option value="price-asc">Precio: menor a mayor</option>
+        <option value="price-desc">Precio: mayor a menor</option>
+        <option value="title-asc">Nombre: A–Z</option>
+        <option value="title-desc">Nombre: Z–A</option>
+      </select>
+    </div>
+  </section>
+
+  <!-- Drawer de filtros -->
+  <aside id="filtersDrawer" class="filters-drawer" aria-hidden="true">
+    <div class="filters-drawer__header">
+      <h3>Filtros</h3>
+      <button id="closeFilters" class="icon-btn" aria-label="Cerrar filtros">✕</button>
+    </div>
+
+    <form id="filtersForm" class="filters-form">
+      <fieldset>
+        <legend>Género</legend>
+        <label><input type="checkbox" name="variant" value="devocional"> Devocional</label>
+        <label><input type="checkbox" name="variant" value="teologia"> Teología</label>
+        <label><input type="checkbox" name="variant" value="familia"> Familia</label>
+        <label><input type="checkbox" name="variant" value="liderazgo"> Liderazgo</label>
+        <label><input type="checkbox" name="variant" value="juvenil"> Juvenil / Adolescentes</label>
+        <label><input type="checkbox" name="variant" value="infantil"> Infantil</label>
+        <label><input type="checkbox" name="variant" value="otros"> Otros</label>
+      </fieldset>
+
+      <fieldset>
+        <legend>Formato</legend>
+        <label><input type="checkbox" name="size" value="tapa-dura"> Tapa dura</label>
+        <label><input type="checkbox" name="size" value="tapa-blanda"> Tapa blanda</label>
+        <label><input type="checkbox" name="size" value="bolsillo"> Bolsillo</label>
+      </fieldset>
+
+      <fieldset class="price-field">
+        <legend>Precio (MXN)</legend>
+        <div class="price-row">
+          <input type="number" id="minPrice" placeholder="Mín" min="0" step="10" inputmode="decimal">
+          <span>–</span>
+          <input type="number" id="maxPrice" placeholder="Máx" min="0" step="10" inputmode="decimal">
+        </div>
+      </fieldset>
+
+      <div class="filters-actions">
+        <button id="applyFilters" type="button" class="btn primary">Aplicar</button>
+        <button id="clearFilters" type="button" class="btn ghost">Limpiar</button>
+      </div>
+    </form>
+  </aside>
+  <div id="filtersBackdrop" class="backdrop" hidden></div>
+
+  <!-- Meta -->
+  <section class="catalog-meta">
+    <div class="results"><span id="resultsCount">0</span> resultados</div>
+  </section>
+
+  <!-- GRID: productos (UN SOLO MAIN/GRID) -->
+  <main class="grid" id="grid" aria-live="polite">
+    <!-- Libro 1 -->
+    <article class="card-product"
+      data-id="LIB-001"
+      data-title="El hilo escarlata"
+      data-price="320"
+      data-variant="novela"
+      data-genre="novela"
+      data-author="Francine Rivers"
+      data-size="tapa-blanda"
+      data-binding="tapa-blanda"
+      data-images="IMAGENES/LIBROS/EL%20HILO%20ESCARLATA.jpg"
+      data-stock="1"
+      data-compareat="380"
+      data-offertext="¡Ahorra 15%!">
+      <div class="card-media">
+        <img src="IMAGENES/LIBROS/EL%20HILO%20ESCARLATA.jpg" alt="El hilo escarlata — Francine Rivers (tapa blanda)" loading="lazy" decoding="async">
+        <span class="badge price">$320</span>
+      </div>
+      <div class="info">
+        <h3>El hilo escarlata</h3>
+        <p>Autor: Francine Rivers</p>
+        <div class="actions">
+          <button class="btn primary add-cart" type="button">Agregar</button>
+          <button class="btn ghost view" type="button">Ver</button>
+        </div>
+      </div>
+    </article>
+
+    <!-- Libro 2 -->
+    <article class="card-product"
+      data-id="LIB-002"
+      data-title="Una vida con propósito"
+      data-price="330"
+      data-variant="otros"
+      data-genre="motivacional"
+      data-author="Rick Warren"
+      data-size="tapa-blanda"
+      data-binding="tapa-blanda"
+      data-images="IMAGENES/LIBROS/UNA%20VIDA%20CON%20PROPOSITO.jpg"
+      data-stock="5">
+      <div class="card-media">
+        <img src="IMAGENES/LIBROS/UNA%20VIDA%20CON%20PROPOSITO.jpg" alt="Una vida con propósito — Rick Warren (tapa blanda)" loading="lazy" decoding="async">
+        <span class="badge price">$330</span>
+      </div>
+      <div class="info">
+        <h3>Una vida con propósito</h3>
+        <p>Autor: Rick Warren</p>
+        <div class="actions">
+          <button class="btn primary add-cart" type="button">Agregar</button>
+          <button class="btn ghost view" type="button">Ver</button>
+        </div>
+      </div>
+    </article>
+
+    <!-- Libro 3 -->
+    <article class="card-product"
+      data-id="LIB-003"
+      data-title="La obra maestra"
+      data-price="320"
+      data-variant="novela"
+      data-genre="novela"
+      data-author="Francine Rivers"
+      data-size="tapa-blanda"
+      data-binding="tapa-blanda"
+      data-images="IMAGENES/LIBROS/LA%20OBRA%20MAESTRA.jpg"
+      data-stock="1"
+      data-compareat="320">
+      <div class="card-media">
+        <img src="IMAGENES/LIBROS/LA%20OBRA%20MAESTRA.jpg" alt="La obra maestra — Francine Rivers (tapa blanda)" loading="lazy" decoding="async">
+        <span class="badge price">$320</span>
+      </div>
+      <div class="info">
+        <h3>La obra maestra</h3>
+        <p>Autor: Francine Rivers</p>
+        <div class="actions">
+          <button class="btn primary add-cart" type="button">Agregar</button>
+          <button class="btn ghost view" type="button">Ver</button>
+        </div>
+      </div>
+    </article>
+
+    <!-- Libro 4 -->
+    <article class="card-product"
+      data-id="LIB-004"
+      data-title="Esta mina mía"
+      data-price="320"
+      data-variant="novela"
+      data-genre="novela"
+      data-author="Francine Rivers"
+      data-size="tapa-blanda"
+      data-binding="tapa-blanda"
+      data-images="IMAGENES/LIBROS/ESTA%20MINA%20MIA.jpg"
+      data-stock="1">
+      <div class="card-media">
+        <img src="IMAGENES/LIBROS/ESTA%20MINA%20MIA.jpg" alt="Esta mina mía — Francine Rivers (tapa blanda)" loading="lazy" decoding="async">
+        <span class="badge price">$320</span>
+      </div>
+      <div class="info">
+        <h3>Esta mina mía</h3>
+        <p>Autor: Francine Rivers</p>
+        <div class="actions">
+          <button class="btn primary add-cart" type="button">Agregar</button>
+          <button class="btn ghost view" type="button">Ver</button>
+        </div>
+      </div>
+    </article>
+
+    <!-- Libro 5 -->
+    <article class="card-product"
+      data-id="LIB-005"
+      data-title="Un linaje de gracia"
+      data-price="320"
+      data-variant="novela"
+      data-genre="novela"
+      data-author="Francine Rivers"
+      data-size="tapa-blanda"
+      data-binding="tapa-blanda"
+      data-images="IMAGENES/LIBROS/UN%20LINAJE%20DE%20GRACIA.jpg"
+      data-stock="1">
+      <div class="card-media">
+        <img src="IMAGENES/LIBROS/UN%20LINAJE%20DE%20GRACIA.jpg" alt="Un linaje de gracia — Francine Rivers (tapa blanda)" loading="lazy" decoding="async">
+        <span class="badge price">$320</span>
+      </div>
+      <div class="info">
+        <h3>Un linaje de gracia</h3>
+        <p>Autor: Francine Rivers</p>
+        <div class="actions">
+          <button class="btn primary add-cart" type="button">Agregar</button>
+          <button class="btn ghost view" type="button">Ver</button>
+        </div>
+      </div>
+    </article>
+
+    <!-- Libro 6 -->
+    <article class="card-product"
+      data-id="LIB-006"
+      data-title="Y el shofar sonó"
+      data-price="320"
+      data-variant="novela"
+      data-genre="novela"
+      data-author="Francine Rivers"
+      data-size="tapa-blanda"
+      data-binding="tapa-blanda"
+      data-images="IMAGENES/LIBROS/Y%20EL%20SHOFAR%20SONO.jpg"
+      data-stock="1">
+      <div class="card-media">
+        <img src="IMAGENES/LIBROS/Y%20EL%20SHOFAR%20SONO.jpg" alt="Y el shofar sonó — Francine Rivers (tapa blanda)" loading="lazy" decoding="async">
+        <span class="badge price">$320</span>
+      </div>
+      <div class="info">
+        <h3>Y el shofar sonó</h3>
+        <p>Autor: Francine Rivers</p>
+        <div class="actions">
+          <button class="btn primary add-cart" type="button">Agregar</button>
+          <button class="btn ghost view" type="button">Ver</button>
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <!-- Modal de Producto (template) -->
+  <template id="fsModalTmpl">
+    <div class="fs-backdrop" role="presentation">
+      <button class="fs-close" aria-label="Cerrar">×</button>
+
+      <div class="fs-modal" role="dialog" aria-modal="true" aria-labelledby="fsTitle">
+        <div class="fs-left">
+          <div class="fs-slider">
+            <button class="fs-arrow left" aria-label="Anterior">&#10094;</button>
+            <div class="fs-stage"></div>
+            <button class="fs-arrow right" aria-label="Siguiente">&#10095;</button>
+            <div class="fs-nav" aria-label="Miniaturas"></div>
+          </div>
+        </div>
+
+        <div class="fs-right">
+          <div id="fsTitle" class="fs-title"></div>
+
+          <div class="fs-price">
+            <div class="now"></div>
+            <div class="before" style="display:none"></div>
+          </div>
+
+          <div class="prod-meta">
+            <div class="promo" id="modalPromo" hidden>
+              <span class="badge-oferta">OFERTA</span>
+              <span class="promo-text"></span>
+            </div>
+            <div class="stock" id="modalStock" aria-live="polite">
+              <span class="stock-dot" aria-hidden="true"></span>
+              <span class="stock-text">En stock</span>
+            </div>
+          </div>
+
+          <div class="fs-swatches" id="fsSwatches" aria-label="Variantes de color"></div>
+          <div class="fs-meta"></div>
+
+          <div class="fs-actions">
+            <button class="btn-xl btn-ghost" id="fsAdd">Agregar al carrito</button>
+            <button class="btn-xl btn-primary" id="fsBuy">Comprar ahora</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </template>
+
+  <!-- Modal de Checkout (template) -->
+  <template id="coModalTmpl">
+    <div class="co-backdrop" role="presentation">
+      <div class="co-modal" role="dialog" aria-modal="true" aria-labelledby="coTitle">
+        <div class="co-flag" aria-hidden="true"></div>
+
+        <div class="co-hdr">
+          <div id="coTitle" class="co-title">Datos para envío y contacto</div>
+          <button class="co-close" aria-label="Cerrar">×</button>
+        </div>
+
+        <div class="co-body">
+          <div class="co-col">
+            <h4>Información del cliente</h4>
+
+            <div class="co-grid">
+              <div class="co-field full">
+                <label class="co-label" for="coName">Nombre completo *</label>
+                <input class="co-input" id="coName" autocomplete="name" placeholder="Ej. Ana López" required>
+                <div class="co-err">Ingresa tu nombre.</div>
+              </div>
+
+              <div class="co-field">
+                <label class="co-label" for="coPhone">Teléfono *</label>
+                <input class="co-input" id="coPhone" type="tel" inputmode="tel" autocomplete="tel" placeholder="10 dígitos" required>
+                <div class="co-err">Teléfono inválido.</div>
+              </div>
+
+              <div class="co-field">
+                <label class="co-label" for="coEmail">Correo *</label>
+                <input class="co-input" id="coEmail" type="email" autocomplete="email" placeholder="tucorreo@dominio.com" required>
+                <div class="co-err">Correo inválido.</div>
+              </div>
+
+              <div class="co-field full">
+                <label class="co-label" for="coStreet">Calle y número *</label>
+                <input class="co-input" id="coStreet" autocomplete="address-line1" placeholder="Calle, número" required>
+                <div class="co-err">Requerido.</div>
+              </div>
+
+              <div class="co-field">
+                <label class="co-label" for="coCol">Colonia *</label>
+                <input class="co-input" id="coCol" autocomplete="address-line2" placeholder="Colonia" required>
+                <div class="co-err">Requerido.</div>
+              </div>
+
+              <div class="co-field">
+                <label class="co-label" for="coCP">C.P. *</label>
+                <input class="co-input" id="coCP" inputmode="numeric" pattern="\d{5}" placeholder="5 dígitos" required>
+                <div class="co-err">C.P. inválido.</div>
+              </div>
+
+              <div class="co-field">
+                <label class="co-label" for="coCity">Ciudad *</label>
+                <input class="co-input" id="coCity" autocomplete="address-level2" placeholder="Ciudad" required>
+                <div class="co-err">Requerido.</div>
+              </div>
+
+              <div class="co-field">
+                <label class="co-label" for="coState">Estado *</label>
+                <input class="co-input" id="coState" autocomplete="address-level1" placeholder="Estado" required>
+                <div class="co-err">Requerido.</div>
+              </div>
+
+              <div class="co-field full">
+                <label class="co-label" for="coNotes">Notas (opcional)</label>
+                <textarea class="co-textarea" id="coNotes" placeholder="Referencias para entrega, horario, entre calles…"></textarea>
+              </div>
+            </div>
+
+            <label class="co-terms">
+              <input id="coTerms" type="checkbox">
+              <span>
+                Acepto los <a href="#" target="_blank" rel="noopener">Términos y Condiciones</a> y el
+                <a href="#" target="_blank" rel="noopener">Aviso de Privacidad</a>.
+              </span>
+            </label>
+          </div>
+
+          <div class="co-col">
+            <h4>Resumen del pedido</h4>
+            <div class="co-summary" id="coSummary"></div>
+            <div class="co-item" id="coShipRow" hidden>
+              <span>Envío</span><span id="coShipVal"></span>
+            </div>
+            <div class="co-total"><span>Total</span><strong id="coTotal"></strong></div>
+          </div>
+        </div>
+
+        <div class="co-ftr">
+          <button class="co-btn ghost" id="coCancel" type="button">Cancelar</button>
+          <button class="co-btn primary" id="coSubmit" type="button">Confirmar y continuar a WhatsApp</button>
+        </div>
+      </div>
+    </div>
+  </template>
+
+  <!-- Panel música -->
+  <button class="music-fab" id="musicToggle" aria-expanded="false">🎧 Música inspiradora</button>
+  <div id="musicPanel" class="music-panel" hidden>
+    <p class="small">Lista de reproducción ligera para concentrarte.</p>
+    <select id="musicList" class="select" aria-label="Selecciona música">
+      <option value="IMAGENES/De Tu Amor Necesita México - Ruth Ríos - Con Letra(MP3_320K).mp3">De tu amor necesita México</option>
+      <option value="https://cdn.pixabay.com/download/audio/2022/03/15/audio_2e3b8c.mp3?filename=chill-2.mp3">Chill 2</option>
+      <option value="https://cdn.jsdelivr.net/gh/johnkevinlong/cdn-audio@main/lofi-3.mp3">LoFi 3</option>
+    </select>
+    <div>
+      <audio id="musicPlayer" controls preload="none"></audio>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer" id="contacto">
+    <p>¿Dudas? Escríbenos: <a class="accent" href="https://wa.me/528443288521" target="_blank" rel="noopener">+52 844 328 8521</a></p>
+    <small>&copy; 2025 Librería Vida — Todos los derechos reservados</small>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="libros.js" defer></script>
+
+  <!-- Contenedor opcional para checkout -->
+  <div id="checkoutModal" hidden></div>
+
+  <!-- Confetti (papel picado) -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <!-- Lógica: FAB oculto si carrito vacío + confetti al agregar -->
+  <script>
+  (function(){
+    function $(s, r){ return (r||document).querySelector(s); }
+    function readCart(){
+      try { return JSON.parse(localStorage.getItem('vida_cart_v1') || '[]'); }
+      catch(e){ return []; }
+    }
+    function qtyTotal(items){ return items.reduce((a,b)=> a + Number(b.qty||0), 0); }
+    function updateFab(){
+      const items = readCart();
+      const qty   = qtyTotal(items);
+      const fab   = $('#cartFab');
+      const badge = $('#cartFabCount');
+      if (badge) badge.textContent = String(qty||0);
+      if (fab)   fab.style.display = qty > 0 ? 'flex' : 'none';
+    }
+    function boom(origin){
+      try {
+        confetti({ particleCount: 90, spread: 70, origin: origin || { y: 0.6 } });
+      } catch(e){}
+    }
+    window.addEventListener('vida:add-to-cart', function(){ boom(); setTimeout(updateFab, 60); });
+    document.addEventListener('click', function(ev){
+      const btn = ev.target.closest && ev.target.closest('.add-cart');
+      if (!btn) return;
+      const x = (ev.clientX || 0) / window.innerWidth;
+      const y = (ev.clientY || 0) / window.innerHeight;
+      boom({ x: Math.min(Math.max(x, 0.05), 0.95), y: Math.min(Math.max(y, 0.1), 0.9) });
+      setTimeout(updateFab, 80);
+    });
+    document.addEventListener('DOMContentLoaded', updateFab);
+    window.addEventListener('storage', function(ev){ if (ev.key === 'vida_cart_v1') updateFab(); });
+    window.addEventListener('vida:cart-updated', updateFab);
+
+    const backdrop = $('#cartBackdrop');
+    if (backdrop) backdrop.addEventListener('click', closeMiniCart);
+    document.addEventListener('keydown', function(e){ if (e.key === 'Escape') closeMiniCart(); });
+    function closeMiniCart(){
+      const panel  = $('#miniCartPanel');
+      const toggle = $('.mini-cart__toggle');
+      if (panel)  panel.classList.remove('is-open');
+      if (toggle) toggle.setAttribute('aria-expanded','false');
+      if (backdrop){
+        backdrop.classList.remove('is-open');
+        setTimeout(()=> (backdrop.hidden = true), 180);
+      }
+      document.documentElement.style.overflow = '';
+    }
+  })();
+  </script>
+</body>
+</html>

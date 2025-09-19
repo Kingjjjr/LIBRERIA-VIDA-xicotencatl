@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+  <title>Biblias – Librería Vida</title>
+
+  <!-- Fuente & Favicon -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="icon" href="IMAGENES/favicon.png" type="image/png"/>
+
+  <!-- Estilos -->
+  <link rel="stylesheet" href="biblias.css"/>
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="header">
+    <a class="logo" href="index.html" aria-label="Volver al inicio">
+      <img src="IMAGENES/LIB-VIDA.png" alt="Logo de Librería Vida">
+      <span>Librería <strong>Vida</strong></span>
+    </a>
+
+    <button class="menu-toggle" aria-label="Abrir menú" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+
+    <!-- ID agregado para compatibilidad con JS -->
+    <nav id="nav" class="nav" aria-label="Navegación principal">
+      <a href="index.html">Inicio</a>
+      <a class="active" href="BIBLIAS.html" aria-current="page">Biblias</a>
+      <a href="LIBROS.html">Libros</a>
+      <a href="#contacto">Contacto</a>
+    </nav>
+
+    <!-- Backdrop que usa el menú y el carrito (necesario para tu JS) -->
+    <div class="nav-backdrop" hidden></div>
+
+    <!-- Papel picado (decorativo) -->
+    <div aria-hidden="true" style="width:100%;margin-top:12px">
+      <svg viewBox="0 0 1200 60" preserveAspectRatio="none" width="100%" height="60">
+        <defs>
+          <pattern id="pp" width="120" height="60" patternUnits="userSpaceOnUse">
+            <rect width="120" height="60" fill="#fef3c7"></rect>
+            <circle cx="20" cy="20" r="6" fill="#ef4444"></circle>
+            <circle cx="60" cy="20" r="6" fill="#10b981"></circle>
+            <circle cx="100" cy="20" r="6" fill="#3b82f6"></circle>
+            <path d="M0,60 60,0 120,60Z" fill="#fde68a" opacity="0.8"></path>
+          </pattern>
+        </defs>
+        <rect width="1200" height="60" fill="url(#pp)"></rect>
+      </svg>
+    </div>
+
+    <!-- Carrito -->
+    <div id="cartBackdrop" hidden></div>
+
+    <button id="cartFab" class="cart-fab" type="button" aria-label="Abrir carrito" style="display:none">
+      🛒 <span class="cart-fab__badge" id="cartFabCount">0</span>
+    </button>
+
+    <button class="mini-cart__toggle" aria-expanded="false" hidden></button>
+    <aside id="miniCartPanel" class="mini-cart__panel" aria-live="polite">
+      <h4>Tu carrito</h4>
+      <ul id="cartItems" class="mini-cart__items"></ul>
+
+      <div class="mini-cart__row">
+        <span>Total:</span>
+        <span id="cartTotal">$0.00</span>
+      </div>
+
+      <div class="mini-cart__actions">
+        <button id="cartClear" class="btn ghost" type="button">Vaciar</button>
+        <button id="openCheckout" class="btn primary" type="button">Finalizar (WA)</button>
+      </div>
+    </aside>
+  </header>
+
+  <!-- Audio global -->
+  <audio id="fiestaAudio" preload="auto"></audio>
+
+  <!-- Migas -->
+  <nav class="breadcrumb" aria-label="Ruta de navegación">
+    <a href="index.html">Inicio</a>
+    <span aria-hidden="true">›</span>
+    <strong>Biblias</strong>
+  </nav>
+
+  <!-- Toolbar -->
+  <section class="toolbar" aria-label="Herramientas de catálogo">
+    <div class="left-tools">
+      <button id="openFilters" class="btn filter-btn" type="button" aria-controls="filtersDrawer" aria-expanded="false">☰ Filtros</button>
+      <div class="header-search">
+        <div class="group">
+          <svg viewBox="0 0 24 24" class="search-icon" aria-hidden="true" focusable="false">
+            <path d="M21.53 20.47l-3.66-3.66C19.195 15.24 20 13.214 20 11c0-4.97-4.03-9-9-9s-9 4.03-9 9 4.03 9 9 9c2.215 0 4.24-.804 5.808-2.13l3.66 3.66c.147.146.34.22.53.22s.385-.073.53-.22c.295-.293.295-.767.002-1.06zM3.5 11c0-4.135 3.365-7.5 7.5-7.5s7.5 3.365 7.5 7.5-3.365 7.5-7.5 7.5-7.5-3.365-7.5-7.5z"></path>
+          </svg>
+          <input id="search" type="search" placeholder="Buscar (ej. RV60, estudio, piel, zipper…)" aria-label="Buscar productos" />
+        </div>
+      </div>
+    </div>
+    <div class="sorter">
+      <label for="sort">Ordenar:</label>
+      <select id="sort" aria-label="Ordenar productos">
+        <option value="relevance">Relevancia</option>
+        <option value="price-asc">Precio: menor a mayor</option>
+        <option value="price-desc">Precio: mayor a menor</option>
+        <option value="title-asc">Nombre: A–Z</option>
+        <option value="title-desc">Nombre: Z–A</option>
+      </select>
+      <div class="view-toggle" role="group" aria-label="Modo de vista">
+        <button id="gridView" class="active" aria-pressed="true">Grid</button>
+        <button id="listView" aria-pressed="false">Lista</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Drawer de filtros -->
+  <aside id="filtersDrawer" class="filters-drawer" aria-hidden="true" aria-labelledby="filtersTitle">
+    <div class="filters-drawer__header">
+      <h3 id="filtersTitle">Filtros</h3>
+      <button id="closeFilters" class="icon-btn" aria-label="Cerrar filtros">✕</button>
+    </div>
+
+    <form id="filtersForm" class="filters-form">
+      <fieldset>
+        <legend>Tipo</legend>
+        <label><input type="checkbox" name="variant" value="estudio"> Estudio</label>
+        <label><input type="checkbox" name="variant" value="letra-grande"> Letra grande</label>
+        <label><input type="checkbox" name="variant" value="compacta"> Compacta</label>
+        <label><input type="checkbox" name="variant" value="infantil"> Infantil</label>
+        <label><input type="checkbox" name="variant" value="devocional"> Devocional</label>
+        <label><input type="checkbox" name="variant" value="otras"> Otras</label>
+      </fieldset>
+
+      <fieldset>
+        <legend>Versión</legend>
+        <label><input type="checkbox" name="version" value="rv60"> RV60</label>
+        <label><input type="checkbox" name="version" value="ntv"> NTV</label>
+        <label><input type="checkbox" name="version" value="nvi"> NVI</label>
+        <label><input type="checkbox" name="version" value="tla"> TLA</label>
+        <label><input type="checkbox" name="version" value="rvr09"> RVR09</label>
+        <label><input type="checkbox" name="version" value="otras"> Otras</label>
+      </fieldset>
+
+      <fieldset>
+        <legend>Tamaño</legend>
+        <label><input type="checkbox" name="size" value="bolsillo"> Bolsillo</label>
+        <label><input type="checkbox" name="size" value="compacta"> Compacta</label>
+        <label><input type="checkbox" name="size" value="manual"> Manual</label>
+        <label><input type="checkbox" name="size" value="letra-grande"> Letra grande</label>
+        <label><input type="checkbox" name="size" value="super-grande"> Súper grande</label>
+      </fieldset>
+
+      <fieldset>
+        <legend>Empaste</legend>
+        <label><input type="checkbox" name="binding" value="tapa-dura"> Tapa dura</label>
+        <label><input type="checkbox" name="binding" value="piel"> Piel / sintético</label>
+        <label><input type="checkbox" name="binding" value="blanda"> Blanda</label>
+        <label><input type="checkbox" name="binding" value="zipper"> Con zipper</label>
+      </fieldset>
+
+      <fieldset class="price-field">
+        <legend>Precio (MXN)</legend>
+        <div class="price-row">
+          <input type="number" id="minPrice" placeholder="Mín" min="0" step="10" inputmode="decimal">
+          <span>–</span>
+          <input type="number" id="maxPrice" placeholder="Máx" min="0" step="10" inputmode="decimal">
+        </div>
+      </fieldset>
+
+      <div class="filters-actions">
+        <button id="applyFilters" type="button" class="btn primary">Aplicar</button>
+        <button id="clearFilters" type="button" class="btn ghost">Limpiar</button>
+      </div>
+    </form>
+  </aside>
+  <div id="filtersBackdrop" class="backdrop" hidden></div>
+
+  <!-- Meta -->
+  <section class="catalog-meta">
+    <div class="results"><span id="resultsCount">0</span> resultados</div>
+  </section>
+
+  <!-- GRID: productos -->
+  <main class="grid" id="grid" aria-live="polite">
+    <!-- 1 -->
+    <article class="card-product"
+      data-id="BIB-001"
+      data-title="Biblia RV60 con letra grande, tapa dura"
+      data-price="475"
+      data-variant="letra-grande"
+      data-version="rv60"
+      data-size="manual"
+      data-binding="tapa-dura"
+      data-images="IMAGENES/ORIGEN/B.ORIGEN.GTC%201.jpg|IMAGENES/ORIGEN/B.ORIGEN.GTC%202.jpg|IMAGENES/ORIGEN/B.ORIGEN.GTC%203.jpg"
+      data-stock="12"
+      data-compareat="569"
+      data-offertext="">
+      <figure class="card-media">
+        <img src="IMAGENES/ORIGEN/B.ORIGEN.GTC%201.jpg" alt="Biblia RV60 con letra grande, tapa dura, color negro">
+        <span class="badge">$475</span>
+      </figure>
+      <div class="info">
+        <h3>Biblia RV60 con letra grande, tapa dura</h3>
+        <p class="meta">letra grande · RV60 · tapa dura</p>
+        <div class="color-inline swatches" role="radiogroup" aria-label="Colores">
+          <button class="sw" aria-label="Negro" data-color="Negro" data-image="IMAGENES/ORIGEN/B.ORIGEN.GTC%201.jpg"></button>
+        </div>
+        <div class="actions">
+          <button class="btn outline view" type="button">Ver</button>
+          <button class="btn primary add-cart" type="button">Agregar</button>
+        </div>
+      </div>
+    </article>
+
+    <!-- 2 -->
+    <article class="card-product"
+      data-id="BIB-002"
+      data-title="Biblia NTV QR Principios para vivir"
+      data-price="1400"
+      data-variant="devocional"
+      data-version="ntv"
+      data-size="manual"
+      data-binding="piel"
+      data-images="IMAGENES/NTV/QR-NTV.BEIGE.jpg|IMAGENES/NTV/NTV.A.QR.jpg|IMAGENES/NTV/QR-NTV.NARANJA.jpg|IMAGENES/NTV/QR.jpg|IMAGENES/NTV/QR3.png"
+      data-stock="7"
+      data-compareat="990">
+      <figure class="card-media">
+        <img src="IMAGENES/NTV/NTV.A.QR.jpg" alt="Biblia NTV devocional QR color azul">
+        <span class="badge">$1,400</span>
+      </figure>
+      <div class="info">
+        <h3>Biblia NTV QR Principios para vivir</h3>
+        <p class="meta">devocional · NTV · piel</p>
+        <div class="color-inline swatches" role="radiogroup" aria-label="Colores">
+          <button class="sw" aria-label="Azul" data-color="Azul" data-image="IMAGENES/NTV/NTV.A.QR.jpg"></button>
+          <button class="sw" aria-label="Naranja" data-color="Naranja" data-image="IMAGENES/NTV/QR-NTV.NARANJA.jpg"></button>
+          <button class="sw" aria-label="Beige" data-color="Beige" data-image="IMAGENES/NTV/QR-NTV.BEIGE.jpg"></button>
+        </div>
+        <div class="actions">
+          <button class="btn outline view" type="button">Ver</button>
+          <button class="btn primary add-cart" type="button">Agregar</button>
+        </div>
+      </div>
+    </article>
+
+    <!-- 3 -->
+    <article class="card-product"
+      data-id="BIB-003"
+      data-title="Biblia rv60 letra super-grande"
+      data-price="1000"
+      data-variant="letra-grande"
+      data-version="rv60"
+      data-size="super-grande"
+      data-binding="piel/sintético"
+      data-images="IMAGENES/RV60/SG%20ROSA.jpeg|IMAGENES/RV60/SUPER%20GIGANTE.jpeg"
+      data-stock="8">
+      <figure class="card-media">
+        <img src="IMAGENES/RV60/SUPER%20GIGANTE.jpeg" alt="Biblia rv60 SUPER GIGANTE PASTA PIEL">
+        <span class="badge">$1000</span>
+      </figure>
+      <div class="info">
+        <h3>Biblia RV60 LETRA SUPER GIGANTE</h3>
+        <p class="meta">super-grande · RV60 · Piel / sintético</p>
+        <div class="color-inline swatches" role="radiogroup" aria-label="Colores">
+          <button class="sw" aria-label="Negro" data-color="Negro" data-image="IMAGENES/RV60/SUPER%20GIGANTE.jpeg"></button>
+          <button class="sw" aria-label="Rosa"  data-color="Rosa"  data-image="IMAGENES/RV60/SG%20ROSA.jpeg"></button>
+        </div>
+        <div class="actions">
+          <button class="btn outline view" type="button">Ver</button>
+          <button class="btn primary add-cart" type="button">Agregar</button>
+        </div>
+      </div>
+    </article>
+
+    <!-- 4 -->
+    <article class="card-product"
+      data-id="BIB-004"
+      data-title="Biblia NTV Manual PIEL"
+      data-price="877"
+      data-variant="Estudio"
+      data-version="ntv"
+      data-size="manual"
+      data-binding="Piel/sintetico"
+      data-images="IMAGENES/ntv/INSPIRA.CAFE.1.jpg|IMAGENES/ntv/INSPIRA.CAFE.2.jpg|IMAGENES/ntv/INSPIRA.CAFE.3.JPG"
+      data-stock="17">
+      <figure class="card-media">
+        <img src="IMAGENES/NTV/INSPIRA.CAFE.1.jpg" alt="Biblia NTV DE ESTUDIO">
+        <span class="badge">$877</span>
+      </figure>
+      <div class="info">
+        <h3>Biblia NTV INSPIRA </h3>
+        <p class="meta">DEVOCIONAL · NTV · Piel / sintético </p>
+        <div class="color-inline swatches" role="radiogroup" aria-label="Colores">
+          <button class="sw" aria-label="#03b7ff" data-color="Azul" data-image="IMAGENES/NTV/INPIRA%20AZUL.jpg"></button>
+          <button class="sw" aria-label="#49f8be" data-color="Verde" data-image="IMAGENES/NTV/INSPIRA%20VERDE.jpg"></button>
+          <button class="sw" aria-label="#705352" data-color="CAFE" data-image="IMAGENES/NTV/INSPIRA.CAFE.1.jpg"></button>
+        </div>
+        <div class="actions">
+          <button class="btn outline view" type="button">Ver</button>
+          <button class="btn primary add-cart" type="button">Agregar</button>
+        </div>
+      </div>
+    </article>
+
+    <!-- 5 -->
+    <article class="card-product"
+      data-id="BIB-005"
+      data-title="Biblia NTV ESTUDIO"
+      data-price="950"
+      data-variant="otras"
+      data-version="NTV"
+      data-size="manual"
+      data-binding="piel"
+      data-images="BIBLIAS/Diario-vivir-rosa-1.png|BIBLIAS/Diario-vivir-rosa-2.png|BIBLIAS/Diario-vivir-rosa-3.png"
+      data-stock="8"
+      data-compareat="750">
+      <figure class="card-media">
+        <img src="BIBLIAS/Diario-vivir-rosa-1.png" alt="Biblia NTV manual piel color rosa">
+        <span class="badge">$950</span>
+      </figure>
+      <div class="info">
+        <h3>Biblia Diario vivir Jovenes rosa</h3>
+        <p class="meta">manual · NTV · piel</p>
+
+        <div class="actions">
+          <button class="btn outline view" type="button">Ver</button>
+          <button class="btn primary add-cart" type="button">Agregar</button>
+        </div>
+      </div>
+    </article>
+
+    <!-- 6 -->
+    <article class="card-product"
+      data-id="BIB-006"
+      data-title="Biblia RV60 Estudio scofield"
+      data-price="1110"
+      data-variant="Estudio"
+      data-version="rv60"
+      data-size="Manual"
+      data-binding="Piel"
+      data-images="BIBLIAS/SCOFIELD-1.png|BIBLIAS/SCOFIELD-2.png|BIBLIAS/SCOFIELD-3.png"
+      data-stock="5"
+      data-compareat="1190">
+      <figure class="card-media">
+        <img src="BIBLIAS/SCOFIELD-1.png" alt="Biblia rv60 de estudio scofield">
+        <span class="badge">$1,110</span>
+      </figure>
+      <div class="info">
+        <h3>Biblia RV60 De Estudio Scofield</h3>
+        <p class="meta">letra grande · RV60 · piel</p>
+        <div class="actions">
+          <button class="btn outline view" type="button">Ver</button>
+          <button class="btn primary add-cart" type="button">Agregar</button>
+        </div>
+      </div>
+    </article>
+
+    <!-- 7 -->
+    <article class="card-product"
+      data-id="BIB-007"
+      data-title="Biblia Peshitta"
+      data-price="1100"
+      data-variant="Estudio"
+      data-version="otras"
+      data-size="manual"
+      data-binding="piel"
+      data-images="BIBLIAS/PESHITTA-1 (1).png|BIBLIAS/PESHITTA-2 (1).png|BIBLIAS/PESHITTA-3.png"
+      data-stock="5">
+      <figure class="card-media">
+        <img src="BIBLIAS/PESHITTA-1 (1).png" alt="Biblia De Estudio">
+        <span class="badge">$1100</span>
+      </figure>
+      <div class="info">
+        <h3>Biblia Peshitta</h3>
+        <p class="meta">Estudio de piel</p>
+
+        <div class="actions">
+          <button class="btn outline view" type="button">Ver</button>
+          <button class="btn primary add-cart" type="button">Agregar</button>
+        </div>
+      </div>
+    </article>
+
+    <!-- 8 -->
+    <article class="card-product"
+      data-id="BIB-008"
+      data-title="Biblia Estudio"
+      data-price="1050"
+      data-variant="Estudio"
+      data-version="RV60"
+      data-size="letra-grande"
+      data-binding="tapa-dura"
+      data-images="IMAGENES/ESTUDIO/MT%20HENRY-1.jpg|IMAGENES/ESTUDIO/MT-HENRY-2.jpg"
+      data-stock="1">
+      <figure class="card-media">
+        <img src="IMAGENES/ESTUDIO/MT%20HENRY-1.jpg" alt="Biblia rv60 Estudio">
+        <span class="badge">$1050</span>
+      </figure>
+      <div class="info">
+        <h3>Biblia RV60 De Estudio</h3>
+        <p class="meta">Manual Rv60 Estudio</p>
+
+        <div class="actions">
+          <button class="btn outline view" type="button">Ver</button>
+          <button class="btn primary add-cart" type="button">Agregar</button>
+        </div>
+      </div>
+    </article>
+
+    <!-- 9 -->
+    <article class="card-product"
+      data-id="BIB-009"
+      data-title="Biblia RV60 ULTRAFINA PIEL"
+      data-price="340"
+      data-variant="Otras"
+      data-version="RV60"
+      data-size="manual"
+      data-binding="piel"
+      data-images="BIBLIAS/RV60-ULTRAFINA-NEGRO.png|BIBLIAS/RV60-ULTRAFINA-NEGRO-1.png|BIBLIAS/RV60-ULTRAFINA-NEGRO-2.png|BIBLIAS/RV60-ULTRAFINA-ROSA-1.png|BIBLIAS/RV60-ULTRAFINA-ACUA-1.png|"
+      data-stock="9"
+      data-compareat="340">
+      <figure class="card-media">
+        <img src="BIBLIAS/RV60-ULTRAFINA-NEGRO.png" alt="Biblia NVI manual piel color negro">
+        <span class="badge">$740</span>
+      </figure>
+      <div class="info">
+        <h3>Biblia rv60 ultrafina</h3>
+        <p class="meta">manual · NVI · piel</p>
+        <div class="color-inline swatches" role="radiogroup" aria-label="Colores">
+           <button class="sw" aria-label="negro" data-color="Negro" data-image="BIBLIAS/RV60-ULTRAFINA-NEGRO.png"></button>
+          <button class="sw" aria-label="Rosa" data-color="Rosa" data-image="BIBLIAS/RV60-ULTRAFINA-ROSA-1.png"></button>
+          <button class="sw" aria-label="ACUA" data-color="ACUA" data-image="BIBLIAS/RV60-ULTRAFINA-ACUA-1.png"></button>
+        </div>
+        <div class="actions">
+          <button class="btn outline view" type="button">Ver</button>
+          <button class="btn primary add-cart" type="button">Agregar</button>
+        </div>
+      </div>
+    </article>
+
+    <!-- 10 -->
+    <article class="card-product"
+      data-id="BIB-010"
+      data-title="Biblia RVR09 Bolsillo"
+      data-price="380"
+      data-variant="compacta"
+      data-version="rv60"
+      data-size="bolsillo"
+      data-binding="tapa-dura"
+      data-images="BIBLIAS/RV60-TD-FLORES-BOLSILLO-1.png|BIBLIAS/RV60-TD-FLORES-BOLSILLO-2.png"
+      data-stock="2">
+      <figure class="card-media">
+        <img src="BIBLIAS/RV60-TD-FLORES-BOLSILLO-1.png" alt="Biblia RV60 tapa-dura">
+        <span class="badge">$380</span>
+      </figure>
+      <div class="info">
+        <h3>Biblia RV60 Bolsillo</h3>
+        <p class="meta">bolsillo · RV60 · tapa dura</p>
+
+        <div class="actions">
+          <button class="btn outline view" type="button">Ver</button>
+          <button class="btn primary add-cart" type="button">Agregar</button>
+        </div>
+      </div>
+    </article>
+
+    <!-- 11 -->
+    <article class="card-product"
+      data-id="BIB-011"
+      data-title="Biblia RV60 con letra grande, con zipper"
+      data-price="1000"
+      data-variant="letra-grande"
+      data-version="rv60"
+      data-size="manual"
+      data-binding="zipper"
+      data-images="IBIBLIAS/RV60-CZ-DURAZNO-LTGIG-1.png|BIBLIAS/RV60-CZ-DURAZNO-LTGIG-2.png|BIBLIAS/RV60-CZ-DURAZNO-LTGIG-3.png"
+      data-stock="4"
+      data-compareat="1000"
+      data-offertext="">
+      <figure class="card-media">
+        <img src="BIBLIAS/RV60-CZ-DURAZNO-LTGIG-1.png" alt="Biblia RV60 con letra grande, tapa dura, color negro">
+        <span class="badge">$1000</span>
+      </figure>
+      <div class="info">
+        <h3>Biblia RV60 con letra gigante 14pt, con zipper </h3>
+        <p class="meta">letra grande · RV60 · con zipper</p>
+
+        <div class="actions">
+          <button class="btn outline view" type="button">Ver</button>
+          <button class="btn primary add-cart" type="button">Agregar</button>
+        </div>
+      </div>
+    </article>
+
+    <!-- 12 -->
+    <article class="card-product"
+      data-id="BIB-012"
+      data-title="Biblia rv60 xv años"
+      data-price="1000"
+      data-variant="otrass"
+      data-version="rv60"
+      data-size="compacta"
+      data-binding="zipper"
+      data-images="IMAGENES/EVENTOS/xv-1.jpg|IMAGENES/EVENTOS/xv.jpg"
+      data-stock="21"
+      data-compareat="1000">
+      <figure class="card-media">
+        <img src="IMAGENES/EVENTOS/xv-1.jpg" alt="Biblia rv60 para xv años">
+        <span class="badge">$1,000</span>
+      </figure>
+      <div class="info">
+        <h3>Biblia RV60 Para xv años</h3>
+        <p class="meta">Hermosa biblia para ceremonia de xv años</p>
+        <div class="color-inline swatches" role="radiogroup" aria-label="Colores">
+          <button class="sw" aria-label="lila" data-color="lila" data-image="IMAGENES/rv60/xv-1-lila.jpg"></button>
+        </div>
+        <div class="actions">
+          <button class="btn outline view" type="button">Ver</button>
+          <button class="btn primary add-cart" type="button">Agregar</button>
+        </div>
+      </div>
+    </article>
+
+    <!-- 13 -->
+    <article class="card-product"
+      data-id="BIB-013"
+      data-title="Biblia rv60 de estudio"
+      data-price="780"
+      data-variant="estudio"
+      data-version="rv60"
+      data-size="letra-grande"
+      data-binding="tapa-dura"
+      data-images="IMAGENES/ESTUDIO/cronologica-1.jpg|IMAGENES/ESTUDIO/cronologica-2.jpg"
+      data-stock="6">
+      <figure class="card-media">
+        <img src="IMAGENES/ESTUDIO/cronologica-1.jpg" alt="Biblia rv60 De estudio cronologica">
+        <span class="badge">$780</span>
+      </figure>
+      <div class="info">
+        <h3>Biblia RV60 cronologica de estudio</h3>
+        <p class="meta">Biblia de estudio cronologica ideal para profundizar en el estudio biblico</p>
+
+        <div class="actions">
+          <button class="btn outline view" type="button">Ver</button>
+          <button class="btn primary add-cart" type="button">Agregar</button>
+        </div>
+      </div>
+    </article>
+
+    <!-- 14 -->
+    <article class="card-product"
+      data-id="BIB-014"
+      data-title="Biblia rv60 Manual tapa dura"
+      data-price="500"
+      data-variant="letra-grande"
+      data-version="rv60"
+      data-size="manual"
+      data-binding="tapa-dura"
+      data-images="IMAGENES/RV60/b.m.biblia.td.azul-1.jpg|IMAGENES/RV60/b.m.biblia.td.azul-2.jpg"
+      data-stock="4">
+      <figure class="card-media">
+        <img src="IMAGENES/RV60/b.m.biblia.td.azul-1.jpg" alt="Biblia NTV DE ESTUDIO">
+        <span class="badge">$500</span>
+      </figure>
+      <div class="info">
+        <h3>Biblia Rv60 tapa dura </h3>
+        <p class="meta">Hermosa Biblia azul con tapa dura </p>
+
+        <div class="actions">
+          <button class="btn outline view" type="button">Ver</button>
+          <button class="btn primary add-cart" type="button">Agregar</button>
+        </div>
+      </div>
+    </article>
+
+    <!-- 17 -->
+    <article class="card-product"
+      data-id="BIB-017"
+      data-title="Biblia rv60"
+      data-price="750"
+      data-variant="letra grande"
+      data-version="rv60"
+      data-size="manual"
+      data-binding="piel"
+      data-images="BIBLIAS/RV60-M.BIBLIA-CAFE-INDICE-1.png|BIBLIAS/RV60-M.BIBLIA-CAFE-INDICE-2.png"
+      data-stock="5">
+      <figure class="card-media">
+        <img src="BIBLIAS/RV60-M.BIBLIA-CAFE-INDICE-1.png" alt="Biblia De Estudio">
+        <span class="badge">$750</span>
+      </figure>
+      <div class="info">
+        <h3>Biblia RV60 Cafe Letra grande</h3>
+        <p class="meta">Bonita biblia con canto dorado e indice con letra de 12 pts</p>
+
+        <div class="actions">
+          <button class="btn outline view" type="button">Ver</button>
+          <button class="btn primary add-cart" type="button">Agregar</button>
+        </div>
+      </div>
+    </article>
+
+    <!-- 18 -->
+    <article class="card-product"
+      data-id="BIB-018"
+      data-title="Biblia devocional"
+      data-price="1000"
+      data-variant="Devocional"
+      data-version="RV60"
+      data-size="letra-grande"
+      data-binding="tapa-dura"
+      data-images="BIBLIAS/RV60-APUNTES-1.png|BIBLIAS/RV60-APUNTES-2.png|BIBLIAS/RV60-APUNTES-3.png"
+      data-stock="1">
+      <figure class="card-media">
+        <img src="BIBLIAS/RV60-APUNTES-1.png" alt="Biblia rv60 Estudio">
+        <span class="badge">$1000</span>
+      </figure>
+      <div class="info">
+        <h3>Biblia RV60 De apuntes</h3>
+        <p class="meta">Biblia de apuntes rosa</p>
+
+        <div class="actions">
+          <button class="btn outline view" type="button">Ver</button>
+          <button class="btn primary add-cart" type="button">Agregar</button>
+        </div>
+      </div>
+    </article>
+
+    <!-- 19 -->
+    <article class="card-product"
+      data-id="BIB-019"
+      data-title="Biblia RV60 "
+      data-price="550"
+      data-variant="letra-grande"
+      data-version="RV60"
+      data-size="manual"
+      data-binding="tapa-dura"
+      data-images="BIBLIAS/B-RV60-AZUL.LEON-.png|BIBLIAS/B-RV60-AZUL.LEON-1.png"
+      data-stock="9"
+      data-compareat="820">
+      <figure class="card-media">
+        <img src="BIBLIAS/B-RV60-AZUL.LEON-.png" alt="Biblia NVI manual piel color negro">
+        <span class="badge">$550</span>
+      </figure>
+      <div class="info">
+        <h3>Biblia RV60 de leon azul </h3>
+        <p class="meta">biblia azul con leon letra grande</p>
+
+        <div class="actions">
+          <button class="btn outline view" type="button">Ver</button>
+          <button class="btn primary add-cart" type="button">Agregar</button>
+        </div>
+      </div>
+    </article>
+
+        <!-- 20-->
+    <article class="card-product"
+      data-id="BIB-020"
+      data-title="Biblia rv60"
+      data-price="540"
+      data-desc="Biblia chequera con zipper perfecta para transportarce y verse bien tambien cuenta con infografias y muchas otras cosas"
+      data-variant="otras"
+      data-version="rv60"
+      data-size="bolsillo"
+      data-binding="CON ZIPPER"
+      data-images="BIBLIAS/BIBLIA-CHEQUERA-1.png|BIBLIAS/BIBLIA-CHEQUERA-2.png"
+      data-stock="16"
+     data-compareat="675">
+      <figure class="card-media">
+        <img src="BIBLIAS/BIBLIA-CHEQUERA-1.png" alt="Biblia De Estudio">
+        <span class="badge">$750</span>
+      </figure>
+      <div class="info">
+        <h3>Biblia RV60 Chequera</h3>
+        <p class="meta">Bonita biblia con zipper super compacta para cualquier bolso</p>
+        <div class="color-inline swatches" role="radiogroup" aria-label="Colores">
+  <button class="sw" aria-label="lila-negro"
+          data-color="lila-negro"
+          data-image="biblias/BIBLIA-CHEQUERA-LILA.png"></button>
+  
+          <button class="sw" aria-label="Salmon-Beige-rosa"
+          data-color="Salmon-Beige-rosa"
+          data-image="biblias/BIBLIA-CHEQUERA-ROSA BEIGE-Y.SALMON.png"></button>
+          
+          <button class="sw" aria-label="rosa-beige-rosita"
+          data-color="rosa-beige-rosita"
+          data-image="biblias/BIBLIA-CHEQUERA-ROSA BEIGE.png"></button>
+            
+          <button class="sw" aria-label="rosa-rosita"
+          data-color="rosa-rosita"
+          data-image="biblias/BIBLIA-CHEQUERA-ROSA-Y-ROSA-CLARO.png"></button>
+          
+          <button class="sw" aria-label="rosa-celeste"
+          data-color="rosa-celeste"
+          data-image="biblias/BIBLIA-CHEQUERA-1.png"></button>
+          
+          <button class="sw" aria-label="salmon-beige"
+          data-color="salmon-beige"
+          data-image="biblias/BIBLIA-CHEQUERA-SALMON-BEIJE.png"></button>
+</div>
+        <div class="actions">
+          <button class="btn outline view" type="button">Ver</button>
+          <button class="btn primary add-cart" type="button">Agregar</button>
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <!-- Modal de Producto (template) -->
+  <template id="fsModalTmpl">
+    <div class="fs-backdrop" role="presentation">
+      <button class="fs-close" aria-label="Cerrar">×</button>
+
+      <div class="fs-modal" role="dialog" aria-modal="true" aria-labelledby="fsTitle">
+        <div class="fs-left">
+          <div class="fs-slider">
+            <button class="fs-arrow left" aria-label="Anterior">&#10094;</button>
+            <div class="fs-stage"></div>
+            <button class="fs-arrow right" aria-label="Siguiente">&#10095;</button>
+            <div class="fs-nav" aria-label="Miniaturas"></div>
+          </div>
+        </div>
+
+        <div class="fs-right">
+          <div id="fsTitle" class="fs-title"></div>
+
+          <div class="fs-price">
+            <div class="now"></div>
+            <div class="before" style="display:none"></div>
+          </div>
+
+          <div class="prod-meta">
+            <div class="promo" id="modalPromo" hidden>
+              <span class="badge-oferta">OFERTA</span>
+              <span class="promo-text"></span>
+            </div>
+            <div class="stock" id="modalStock" aria-live="polite">
+              <span class="stock-dot" aria-hidden="true"></span>
+              <span class="stock-text">En stock</span>
+            </div>
+          </div>
+
+          <div class="fs-swatches" id="fsSwatches" aria-label="Variantes de color"></div>
+          <div class="fs-meta"></div>
+  
+               <div class="fs-actions">
+            <button class="btn-xl btn-ghost" id="fsAdd">Agregar al carrito</button>
+            <button class="btn-xl btn-primary" id="fsBuy">Comprar ahora</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </template>
+
+  <!-- Modal de Checkout (template) -->
+  <template id="coModalTmpl">
+    <div class="co-backdrop" role="presentation">
+      <div class="co-modal" role="dialog" aria-modal="true" aria-labelledby="coTitle">
+        <div class="co-flag" aria-hidden="true"></div>
+
+        <div class="co-hdr">
+          <div id="coTitle" class="co-title">Datos para envío y contacto</div>
+          <button class="co-close" aria-label="Cerrar">×</button>
+        </div>
+
+        <div class="co-body">
+          <div class="co-col">
+            <h4>Información del cliente</h4>
+
+            <div class="co-grid">
+              <div class="co-field full">
+                <label class="co-label" for="coName">Nombre completo *</label>
+                <input class="co-input" id="coName" autocomplete="name" placeholder="Ej. Ana López" required>
+                <div class="co-err">Ingresa tu nombre.</div>
+              </div>
+
+              <div class="co-field">
+                <label class="co-label" for="coPhone">Teléfono *</label>
+                <input class="co-input" id="coPhone" type="tel" inputmode="tel" autocomplete="tel" placeholder="10 dígitos" required>
+                <div class="co-err">Teléfono inválido.</div>
+              </div>
+
+              <div class="co-field">
+                <label class="co-label" for="coEmail">Correo *</label>
+                <input class="co-input" id="coEmail" type="email" autocomplete="email" placeholder="tucorreo@dominio.com" required>
+                <div class="co-err">Correo inválido.</div>
+              </div>
+
+              <div class="co-field full">
+                <label class="co-label" for="coStreet">Calle y número *</label>
+                <input class="co-input" id="coStreet" autocomplete="address-line1" placeholder="Calle, número" required>
+                <div class="co-err">Requerido.</div>
+              </div>
+
+              <div class="co-field">
+                <label class="co-label" for="coCol">Colonia *</label>
+                <input class="co-input" id="coCol" autocomplete="address-line2" placeholder="Colonia" required>
+                <div class="co-err">Requerido.</div>
+              </div>
+
+              <div class="co-field">
+                <label class="co-label" for="coCP">C.P. *</label>
+                <input class="co-input" id="coCP" inputmode="numeric" pattern="\d{5}" placeholder="5 dígitos" required>
+                <div class="co-err">C.P. inválido.</div>
+              </div>
+
+              <div class="co-field">
+                <label class="co-label" for="coCity">Ciudad *</label>
+                <input class="co-input" id="coCity" autocomplete="address-level2" placeholder="Ciudad" required>
+                <div class="co-err">Requerido.</div>
+              </div>
+
+              <div class="co-field">
+                <label class="co-label" for="coState">Estado *</label>
+                <input class="co-input" id="coState" autocomplete="address-level1" placeholder="Estado" required>
+                <div class="co-err">Requerido.</div>
+              </div>
+
+              <div class="co-field full">
+                <label class="co-label" for="coNotes">Notas (opcional)</label>
+                <textarea class="co-textarea" id="coNotes" placeholder="Referencias para entrega, horario, entre calles…"></textarea>
+              </div>
+            </div>
+
+            <label class="co-terms">
+              <input id="coTerms" type="checkbox">
+              <span>
+                Acepto los <a href="#" target="_blank" rel="noopener">Términos y Condiciones</a> y el
+                <a href="#" target="_blank" rel="noopener">Aviso de Privacidad</a>.
+              </span>
+            </label>
+          </div>
+
+          <div class="co-col">
+            <h4>Resumen del pedido</h4>
+            <div class="co-summary" id="coSummary"></div>
+            <div class="co-item" id="coShipRow" hidden>
+              <span>Envío</span><span id="coShipVal"></span>
+            </div>
+            <div class="co-total"><span>Total</span><strong id="coTotal"></strong></div>
+          </div>
+        </div>
+
+        <div class="co-ftr">
+          <button class="co-btn ghost" id="coCancel" type="button">Cancelar</button>
+          <button class="co-btn primary" id="coSubmit" type="button">Confirmar y continuar a WhatsApp</button>
+        </div>
+      </div>
+    </div>
+  </template>
+
+  <!-- Panel música -->
+  <button class="music-fab" id="musicToggle" aria-expanded="false">🎧 Música inspiradora</button>
+  <div id="musicPanel" class="music-panel" hidden>
+    <p class="small">Lista de reproducción ligera para concentrarte.</p>
+    <select id="musicList" class="select" aria-label="Selecciona música">
+      <option value="IMAGENES/De Tu Amor Necesita México - Ruth Ríos - Con Letra(MP3_320K).mp3">De tu amor necesita México</option>
+      <option value="https://cdn.pixabay.com/download/audio/2022/03/15/audio_2e3b8c.mp3?filename=chill-2.mp3">Chill 2</option>
+      <option value="https://cdn.pixabay.com/download/audio/2022/03/30/audio_1b1f8f.mp3?filename=lofi-3.mp3">LoFi 3</option>
+    </select>
+    <div>
+      <audio id="musicPlayer" controls preload="none"></audio>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer" id="contacto">
+    <p>¿Dudas? Escríbenos: <a class="accent" href="https://wa.me/528441331841" target="_blank" rel="noopener">+52 844 133 1841</a></p>
+    <small>&copy; 2025 Librería Vida — Todos los derechos reservados</small>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="biblias.js" defer></script>
+
+  <!-- Contenedor opcional para checkout -->
+  <div id="checkoutModal" hidden></div>
+
+  <!-- Confetti (papel picado) -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <!-- Lógica: FAB oculto si carrito vacío + confetti al agregar -->
+  <script>
+  (function(){
+    function $(s, r){ return (r||document).querySelector(s); }
+    function readCart(){
+      try { return JSON.parse(localStorage.getItem('vida_cart_v1') || '[]'); }
+      catch(e){ return []; }
+    }
+    function qtyTotal(items){
+      return items.reduce((a,b)=> a + Number(b.qty||0), 0);
+    }
+    function updateFab(){
+      const items = readCart();
+      const qty   = qtyTotal(items);
+      const fab   = $('#cartFab');
+      const badge = $('#cartFabCount');
+      if (badge) badge.textContent = String(qty||0);
+      if (fab)   fab.style.display = qty > 0 ? 'flex' : 'none';
+    }
+
+    function boom(origin){
+      try {
+        confetti({
+          particleCount: 90,
+          spread: 70,
+          origin: origin || { y: 0.6 }
+        });
+      } catch(e){}
+    }
+
+    window.addEventListener('vida:add-to-cart', function(e){
+      boom();
+      setTimeout(updateFab, 60);
+    });
+
+    document.addEventListener('click', function(ev){
+      const btn = ev.target.closest && ev.target.closest('.add-cart');
+      if (!btn) return;
+      const x = (ev.clientX || 0) / window.innerWidth;
+      const y = (ev.clientY || 0) / window.innerHeight;
+      boom({ x: Math.min(Math.max(x, 0.05), 0.95), y: Math.min(Math.max(y, 0.1), 0.9) });
+      setTimeout(updateFab, 80);
+    });
+
+    document.addEventListener('DOMContentLoaded', updateFab);
+    window.addEventListener('storage', function(ev){ if (ev.key === 'vida_cart_v1') updateFab(); });
+    window.addEventListener('vida:cart-updated', updateFab);
+
+    const backdrop = $('#cartBackdrop');
+    if (backdrop) backdrop.addEventListener('click', closeMiniCart);
+    document.addEventListener('keydown', function(e){ if (e.key === 'Escape') closeMiniCart(); });
+
+    function closeMiniCart(){
+      const panel  = $('#miniCartPanel');
+      const toggle = $('.mini-cart__toggle');
+      if (panel)  panel.classList.remove('is-open');
+      if (toggle) toggle.setAttribute('aria-expanded','false');
+      if (backdrop){
+        backdrop.classList.remove('is-open');
+        setTimeout(()=> (backdrop.hidden = true), 180);
+      }
+      document.documentElement.style.overflow = '';
+    }
+  })();
+  </script>
+  <script>
+/* Swatches: activar y actualizar imagen del modal */
+document.addEventListener('click', function(e){
+  const sw = e.target.closest('.sw');
+  if(!sw) return;
+
+  // marca activo dentro de su contenedor
+  const wrap = sw.closest('.swatches, #fsSwatches');
+  if(wrap){
+    wrap.querySelectorAll('.sw.active').forEach(b=>b.classList.remove('active'));
+    sw.classList.add('active');
+  }
+
+  // si estamos en el modal de producto (fs)
+  const modal = document.querySelector('.fs-modal');
+  if(modal){
+    const imgUrl = sw.getAttribute('data-image');
+    const stage  = modal.querySelector('.fs-stage img');
+    if (imgUrl && stage){
+      stage.src = imgUrl;
+      stage.alt = (stage.alt || 'Variante') + ' (color: ' + (sw.getAttribute('aria-label') || sw.getAttribute('data-color') || '') + ')';
+    }
+  }
+}, {passive:true});
+</script>
+
+</body>
+</html>

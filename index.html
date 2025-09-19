@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <!-- Librería Vida — Home (tema claro + mobile-first) -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Librería Vida — Biblias, Libros, Regalos y Cuadros</title>
+  <meta name="description" content="Librería Vida: biblias, libros, regalos cristianos y cuadros. Envíos a todo México y asesoría por WhatsApp." />
+  <link rel="icon" href="IMAGENES/favicon.png" type="image/png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Estilos -->
+  <link rel="stylesheet" href="css.css" />
+</head>
+
+<body>
+<header class="header" role="banner">
+  <div class="flag-strip" aria-hidden="true"></div>
+
+  <!-- LOGO -->
+  <div class="logo" aria-label="Logo Librería Vida">
+    <img src="IMAGENES/ChatGPT_Image_15_ago_2025__12_29_34_a.m.-removebg-preview (1).png" alt="Librería Vida" width="46" height="46" />
+    <h1>Librería <span>Vida</span></h1>
+  </div>
+
+  <!-- BUSCADOR -->
+  <div class="header-search">
+    <label for="searchTop" class="sr-only">Buscar producto</label>
+    <div class="group">
+      <svg viewBox="0 0 24 24" aria-hidden="true" class="search-icon">
+        <path d="M21.53 20.47l-3.66-3.66C19.2 15.24 20 13.21 20 11 20 6.03 15.97 2 11 2S2 6.03 2 11s4.03 9 9 9c2.21 0 4.24-.8 5.81-2.13l3.66 3.66a.75.75 0 001.06-1.06zM3.5 11A7.5 7.5 0 1111 18.5 7.5 7.5 0 013.5 11z"></path>
+      </svg>
+      <input id="searchTop" type="search" placeholder="Buscar…" autocomplete="off" />
+    </div>
+  </div>
+
+  <!-- MENÚ -->
+  <button class="menu-toggle" aria-label="Abrir menú" aria-expanded="false" aria-controls="nav">
+    <span></span><span></span><span></span>
+  </button>
+
+  <!-- CARRITO -->
+  <div class="header-cart" id="headerCart">
+    <button class="btn icon" id="cartToggle" aria-expanded="false" aria-controls="miniCartPanel">
+      🛒 <span id="cartCount" class="badge">0</span>
+    </button>
+    <div id="miniCartPanel" class="cart-panel" role="dialog" aria-modal="false" aria-label="Carrito" hidden>
+      <ul id="cartItems" class="mini-cart__items"></ul>
+      <div class="cart-panel__footer">
+        <div class="row">
+          <strong>Total: <span id="cartTotal">$0</span></strong>
+        </div>
+        <div class="row">
+          <a id="cartWhats" class="btn primary" target="_blank" rel="noopener">Confirmar por WhatsApp</a>
+          <button id="cartClear" class="btn ghost">Vaciar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- NAV -->
+  <nav id="nav" class="nav" role="navigation" aria-label="Navegación principal">
+    <ul class="nav__list" role="list">
+      <li><a href="/" aria-current="page">Inicio</a></li>
+      <li><a href="BIBLIAS.html">Biblias</a></li>
+      <li><a href="LIBROS.html">Libros</a></li>
+      <li><a href="#contacto">Contacto</a></li>
+    </ul>
+  </nav>
+  <div class="nav-backdrop" hidden></div>
+</header>
+
+<!-- Hero -->
+<section id="hero" class="hero" aria-label="Promociones destacadas">
+  <div class="slides">
+    <img src="IMAGENES/ccl.png" alt="Promoción del mes" loading="eager" />
+    <img src="IMAGENES/BIBLIAS INSPIRA.png" alt="Biblias Inspira — nuevas ediciones" loading="lazy" />
+    <img src="IMAGENES/BIBLIAS NIÑOS.png" alt="Biblias para niños con ilustraciones" loading="lazy" />
+  </div>
+  <button class="slider-btn prev" aria-label="Anterior">❮</button>
+  <button class="slider-btn next" aria-label="Siguiente">❯</button>
+  <div class="dots" aria-label="Indicadores"></div>
+</section>
+
+<!-- Filtros/chips -->
+<section class="toolbar">
+  <div class="filters">
+    <button class="chip active" data-filter="all">Todo</button>
+    <button class="chip" data-filter="BIBLIAS">Biblias</button>
+    <button class="chip" data-filter="LIBROS">Libros</button>
+  </div>
+</section>
+
+<!-- Grid de productos -->
+<main id="contenido">
+  <section class="grid" id="grid" aria-label="Catálogo de productos">
+    <!-- Card 1 -->
+    <article class="card-product BIBLIAS"
+      data-id="BIB-020"
+      data-title="Biblia RV60 Chequera"
+      data-price="540"
+      data-desc="Biblia chequera con zipper; compacta y práctica."
+      data-variant="otras"
+      data-version="rv60"
+      data-size="bolsillo"
+      data-binding="CON ZIPPER"
+      data-images="BIBLIAS/BIBLIA-CHEQUERA-1.png|BIBLIAS/BIBLIA-CHEQUERA-2.png"
+      data-stock="16"
+      data-compareat="675">
+      <figure class="card-media">
+        <img src="BIBLIAS/BIBLIA-CHEQUERA-1.png" alt="Biblia RV60 Chequera">
+        <span class="badge price">$540</span>
+        <span class="badge sale" aria-hidden="true">Oferta</span>
+      </figure>
+      <div class="info">
+        <h3>Biblia RV60 Chequera</h3>
+        <p class="meta">Compacta con zipper · RV60</p>
+
+        <div class="swatches" role="radiogroup" aria-label="Colores">
+          <button class="sw" aria-label="lila-negro" data-color="lila-negro" data-image="biblias/BIBLIA-CHEQUERA-LILA.png"></button>
+          <button class="sw" aria-label="Salmon-Beige-rosa" data-color="Salmon-Beige-rosa" data-image="biblias/BIBLIA-CHEQUERA-ROSA BEIGE-Y.SALMON.png"></button>
+          <button class="sw" aria-label="rosa-beige-rosita" data-color="rosa-beige-rosita" data-image="biblias/BIBLIA-CHEQUERA-ROSA BEIGE.png"></button>
+          <button class="sw" aria-label="rosa-rosita" data-color="rosa-rosita" data-image="biblias/BIBLIA-CHEQUERA-ROSA-Y-ROSA-CLARO.png"></button>
+          <button class="sw" aria-label="rosa-celeste" data-color="rosa-celeste" data-image="biblias/BIBLIA-CHEQUERA-1.png"></button>
+          <button class="sw" aria-label="salmon-beige" data-color="salmon-beige" data-image="biblias/BIBLIA-CHEQUERA-SALMON-BEIJE.png"></button>
+        </div>
+
+        <div class="actions">
+          <button class="btn outline view" type="button">Ver</button>
+          <button class="btn primary add-cart" type="button">Agregar</button>
+        </div>
+      </div>
+    </article>
+
+    <!-- Card 2 -->
+    <article class="card-product BIBLIAS"
+      data-id="BIB-001"
+      data-title="Biblia RV60 con letra grande, tapa dura"
+      data-price="475"
+      data-variant="letra-grande"
+      data-version="rv60"
+      data-size="manual"
+      data-binding="tapa-dura"
+      data-images="IMAGENES/ORIGEN/B.ORIGEN.GTC%201.jpg|IMAGENES/ORIGEN/B.ORIGEN.GTC%202.jpg|IMAGENES/ORIGEN/B.ORIGEN.GTC%203.jpg"
+      data-stock="2"
+      data-compareat="569">
+      <figure class="card-media">
+        <img src="IMAGENES/ORIGEN/B.ORIGEN.GTC%201.jpg" alt="Biblia RV60 con letra grande, tapa dura, color negro">
+        <span class="badge price">$475</span>
+      </figure>
+      <div class="info">
+        <h3>Biblia RV60 con letra grande, tapa dura</h3>
+        <p class="meta">letra grande · RV60 · tapa dura</p>
+        <div class="swatches" role="radiogroup" aria-label="Colores">
+          <button class="sw" aria-label="Negro" data-color="Negro" data-image="IMAGENES/ORIGEN/B.ORIGEN.GTC%201.jpg"></button>
+        </div>
+        <div class="actions">
+          <button class="btn outline view" type="button">Ver</button>
+          <button class="btn primary add-cart" type="button">Agregar</button>
+        </div>
+      </div>
+    </article>
+
+    <!-- Card 3 -->
+    <article class="card-product CUADROS" data-title="Cuadro de Madera" data-price="320" data-images="IMAGENES/cuadro-1.jpg|IMAGENES/cuadro-2.jpg|IMAGENES/cuadro-3.jpg">
+      <figure class="card-media">
+        <img src="IMAGENES/10%.png" alt="Cuadro de madera con versículo" loading="lazy" />
+        <span class="badge price">$320</span>
+      </figure>
+      <div class="info">
+        <h3>Cuadro de Madera</h3>
+        <p class="meta">Decoración con mensaje.</p>
+        <div class="actions">
+          <button class="btn outline view" type="button">Ver</button>
+          <button class="btn primary add-cart" type="button">Agregar</button>
+        </div>
+      </div>
+    </article>
+  </section>
+
+  <div id="emptyState" class="empty" hidden>No encontramos resultados con tus filtros y búsqueda.</div>
+</main>
+
+<!-- Modal de producto -->
+<div class="modal" id="productModal" aria-hidden="true">
+  <div class="modal__dialog" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <button class="modal__close" aria-label="Cerrar">×</button>
+    <div class="modal__body">
+      <div class="product-gallery">
+        <div class="gallery__stage">
+          <button class="gallery__nav left" aria-label="Anterior">❮</button>
+          <img id="galleryMain" src="" alt="" />
+          <button class="gallery__nav right" aria-label="Siguiente">❯</button>
+        </div>
+        <div class="thumbs" id="galleryThumbs"></div>
+      </div>
+      <div class="modal__info">
+        <h3 id="modalTitle">Producto</h3>
+        <div class="modal__actions">
+          <a id="whatsBuy" class="btn" target="_blank" rel="noopener">Consultar por WhatsApp</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal__backdrop" aria-hidden="true"></div>
+</div>
+
+<!-- Suscripción / Newsletter -->
+<section id="suscripcion" class="newsletter" aria-label="Suscripción a promociones">
+  <div class="container">
+    <div class="newsletter__card">
+      <header>
+        <h2>Recibe promociones y lanzamientos</h2>
+        <p class="muted">1–2 correos al mes. Nada de spam.</p>
+      </header>
+      <form id="nlForm" class="nl-form" novalidate>
+        <label class="sr-only" for="nlEmail">Correo</label>
+        <input id="nlEmail" type="email" placeholder="tu@correo.com" required />
+        <button class="btn primary" type="submit">Suscribirme</button>
+      </form>
+      <small id="nlMsg" class="nl-msg" aria-live="polite"></small>
+    </div>
+  </div>
+</section>
+
+<!-- Pie -->
+<footer class="footer" role="contentinfo" id="contacto">
+  <p>¿Dudas? Escríbenos: <a class="accent" href="https://wa.me/528443288521" target="_blank" rel="noopener">+52 844 328 852 1</a></p>
+  <small>&copy; <span id="year">2025</span> Librería Vida — Todos los derechos reservados.</small>
+</footer>
+
+<!-- Papel picado opcional (si quieres usarlo en secciones) -->
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none">
+  <symbol id="ppVida" viewBox="0 0 260 180">
+    <defs>
+      <mask id="ppVidaCut">
+        <rect x="0" y="0" width="260" height="180" fill="#fff"/>
+        <circle cx="43"  cy="176" r="40" fill="#000"/>
+        <circle cx="130" cy="176" r="40" fill="#000"/>
+        <circle cx="217" cy="176" r="40" fill="#000"/>
+        <g fill="#000">
+          <g transform="translate(18,14)"><circle r="3"/><circle cx="18" r="3"/><circle cx="36" r="3"/><circle cx="54" r="3"/><circle cx="72" r="3"/><circle cx="90" r="3"/><circle cx="108" r="3"/><circle cx="126" r="3"/><circle cx="144" r="3"/><circle cx="162" r="3"/><circle cx="180" r="3"/></g>
+          <g transform="translate(10,34)"><circle r="3"/><circle cy="18" r="3"/><circle cy="36" r="3"/><circle cy="54" r="3"/><circle cy="72" r="3"/><circle cy="90" r="3"/><circle cy="108" r="3"/></g>
+          <g transform="translate(250,34)"><circle r="3"/><circle cy="18" r="3"/><circle cy="36" r="3"/><circle cy="54" r="3"/><circle cy="72" r="3"/><circle cy="90" r="3"/><circle cy="108" r="3"/></g>
+        </g>
+        <text x="130" y="88" font-family="Inter" font-weight="900" font-size="46" letter-spacing="2" text-anchor="middle" fill="#000">VIDA</text>
+      </mask>
+    </defs>
+    <rect x="6" y="10" width="248" height="150" rx="14" ry="14" fill="var(--fg,#059669)" mask="url(#ppVidaCut)"/>
+    <path d="M0,10 H260" stroke="#e5e7eb" stroke-width="1" opacity=".7"/>
+  </symbol>
+</svg>
+
+<!-- SDK Mercado Pago (si lo usas) -->
+<script src="https://sdk.mercadopago.com/js/v2"></script>
+<!-- App -->
+<script src="java.js" defer></script>
+</body>
+</html>

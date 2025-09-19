@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Cuadros – Librería Vida</title>
+
+  <!-- Fuente & Favicon -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="icon" href="IMAGENES/favicon.png" type="image/png"/>
+
+  <!-- Estilos -->
+  <link rel="stylesheet" href="cuadros.css">
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="header">
+    <a class="logo" href="index.html" aria-label="Volver al inicio">
+      <img src="IMAGENES/ChatGPT_Image_15_ago_2025__12_29_34_a.m.-removebg-preview (1).png" alt="Librería Vida">
+      <span>Librería <strong>Vida</strong></span>
+    </a>
+
+    <button class="menu-toggle" aria-label="Abrir menú" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+
+    <nav class="nav" aria-label="Navegación principal">
+      <a href="index.html">Inicio</a>
+      <a href="BIBLIAS.html">Biblias</a>
+      <a href="REGALOS.HTML">Regalos</a>
+      <a href="LIBROS.html">Libros</a>
+      <a class="active" href="CUADROS.HTML">Cuadros</a>
+      <a href="#contacto">Contacto</a>
+    </nav>
+
+    <a class="header__cta" href="https://wa.me/528443288521?text=Hola%20Librer%C3%ADa%20Vida%2C%20necesito%20ayuda%20con%20Cuadros"
+       target="_blank" rel="noopener">WhatsApp</a>
+  </header>
+<!-- ===== Modal: Crear cuenta / Iniciar sesión muy simple ===== -->
+<div class="modal" id="accountModal" aria-hidden="true">
+  <div class="modal__dialog" role="dialog" aria-modal="true" aria-labelledby="accTitle">
+    <button class="modal__close" aria-label="Cerrar">&times;</button>
+    <h3 id="accTitle">Crea tu cuenta</h3>
+    <p style="margin:.25rem 0 .75rem">Genera tu código de referidos y acumula VidaCash.</p>
+    <form id="accountForm" class="checkout-form">
+      <div class="row">
+        <label>Nombre
+          <input name="name" type="text" placeholder="Tu nombre" required>
+        </label>
+        <label>Teléfono (WhatsApp)
+          <input name="phone" type="tel" placeholder="+52 ..." required>
+        </label>
+      </div>
+      <label>Correo (opcional)
+        <input name="email" type="email" placeholder="tucorreo@dominio.com">
+      </label>
+      <div class="modal__actions">
+        <button type="submit" class="btn primary">Crear cuenta</button>
+      </div>
+    </form>
+    <div id="accountOk" style="display:none">
+      <p style="margin:.5rem 0">¡Listo! Tu código es:</p>
+      <div style="display:flex;gap:8px;align-items:center">
+        <strong id="myRefCode" style="font-size:1.1rem"></strong>
+        <button id="copyRefCode" class="btn ghost" type="button">Copiar</button>
+      </div>
+      <small>Comparte tu enlace: <span id="myRefLink" style="word-break:break-all"></span></small>
+    </div>
+  </div>
+  <div class="modal__backdrop"></div>
+</div>
+
+<!-- (OPCIONAL) Campo “código de referido” dentro de tu modal de checkout existente -->
+<!-- Si ya tienes #checkoutForm, añade este bloque donde prefieras -->
+<div class="ref-row" style="margin-top:.5rem">
+  <label>Código de referido (opcional)
+    <input id="referralInput" type="text" placeholder="Ej. VIDA-7F3KXQ">
+  </label>
+  <small id="referralHelp" style="display:block;color:#475569">Si llegaste por enlace, se aplica automáticamente.</small>
+</div>
+
+  <!-- Breadcrumb -->
+  <nav class="breadcrumb" aria-label="Ruta de navegación">
+    <a href="index.html">Inicio</a>
+    <span aria-hidden="true">›</span>
+    <strong>Cuadros</strong>
+  </nav>
+
+  <!-- Toolbar -->
+  <section class="toolbar" aria-label="Herramientas de catálogo">
+    <div class="left-tools">
+      <button id="openFilters" class="btn filter-btn" type="button" aria-controls="filtersDrawer" aria-expanded="false">☰ Filtros</button>
+      <div class="searchbox">
+        <input id="search" type="search" placeholder="Buscar cuadro (ej. ‘madera’, ‘grande’, ‘versículo’)…" aria-label="Buscar"/>
+      </div>
+    </div>
+    <div class="sorter">
+      <label for="sort">Ordenar:</label>
+      <select id="sort" aria-label="Ordenar productos">
+        <option value="relevance">Relevancia</option>
+        <option value="price-asc">Precio: menor a mayor</option>
+        <option value="price-desc">Precio: mayor a menor</option>
+        <option value="title-asc">Nombre: A–Z</option>
+        <option value="title-desc">Nombre: Z–A</option>
+      </select>
+    </div>
+  </section>
+
+  <!-- Drawer de Filtros -->
+  <aside id="filtersDrawer" class="filters-drawer" aria-hidden="true">
+    <div class="filters-drawer__header">
+      <h3>Filtros</h3>
+      <button id="closeFilters" class="icon-btn" aria-label="Cerrar filtros">✕</button>
+    </div>
+
+    <form id="filtersForm" class="filters-form">
+      <!-- Tamaño -->
+      <fieldset>
+        <legend>Tamaño</legend>
+        <label><input type="checkbox" name="size" value="grande"> Grande</label>
+        <label><input type="checkbox" name="size" value="mediano"> Mediano</label>
+        <label><input type="checkbox" name="size" value="pequeno"> Pequeño</label>
+      </fieldset>
+
+      <!-- Material -->
+      <fieldset>
+        <legend>Material</legend>
+        <label><input type="checkbox" name="variant" value="madera"> Madera</label>
+        <label><input type="checkbox" name="variant" value="metal"> Metal</label>
+        <label><input type="checkbox" name="variant" value="canvas"> Canvas</label>
+      </fieldset>
+
+      <!-- Precio -->
+      <fieldset class="price-field">
+        <legend>Precio (MXN)</legend>
+        <div class="price-row">
+          <input type="number" id="minPrice" placeholder="Mín" min="0" step="10">
+          <span>–</span>
+          <input type="number" id="maxPrice" placeholder="Máx" min="0" step="10">
+        </div>
+      </fieldset>
+
+      <div class="filters-actions">
+        <button id="applyFilters" type="button" class="btn primary">Aplicar</button>
+        <button id="clearFilters" type="button" class="btn ghost">Limpiar</button>
+      </div>
+    </form>
+  </aside>
+  <div id="filtersBackdrop" class="backdrop" hidden></div>
+
+  <!-- Meta -->
+  <section class="catalog-meta">
+    <div class="results"><span id="resultsCount">0</span> resultados</div>
+    <div class="view-toggle" role="group" aria-label="Modo de vista">
+      <button id="gridView" class="active" aria-pressed="true">Grid</button>
+      <button id="listView" aria-pressed="false">Lista</button>
+    </div>
+  </section>
+
+  <!-- Grid de productos -->
+  <main class="grid" id="grid" aria-live="polite">
+
+    <!-- Producto 1 -->
+    <article
+      class="card-product mediano madera"
+      data-title="Cuadro de lujo – Madera"
+      data-price="185"
+      data-variant="madera"
+      data-size="mediano"
+      data-images="IMAGENES/CUADRO.jpeg|IMAGENES/cuadro%20de%20lujo2.jpeg|IMAGENES/cuadro%20de%20lujo%203.jpeg">
+      <div class="card-media">
+        <img src="IMAGENES/CUADRO.jpeg" alt="Cuadro de lujo en madera, mediano">
+        <span class="badge price">$185</span>
+        <span class="badge sale">Nuevo</span>
+      </div>
+      <div class="info">
+        <h3>Cuadro de lujo</h3>
+        <p>Madera premium con versículo grabado.</p>
+        <div class="actions">
+          <button class="btn primary add-cart" type="button">Agregar</button>
+          <button class="btn ghost view" type="button">Ver</button>
+        </div>
+      </div>
+    </article>
+
+    <!-- Producto 2 -->
+    <article
+      class="card-product mediano madera"
+      data-title="Cuadro lambrín – Madera"
+      data-price="385"
+      data-variant="madera"
+      data-size="mediano"
+      data-images="IMAGENES/10%25.png">
+      <div class="card-media">
+        <img src="IMAGENES/10%25.png" alt="Cuadro lambrín de madera, mediano">
+        <span class="badge price">$385</span>
+        <span class="badge sale">Nuevo</span>
+      </div>
+      <div class="info">
+        <h3>Cuadro lambrín</h3>
+        <p>Madera premium con frase.</p>
+        <div class="actions">
+          <button class="btn primary add-cart" type="button">Agregar</button>
+          <button class="btn ghost view" type="button">Ver</button>
+        </div>
+      </div>
+    </article>
+
+    <!-- Producto 3 (ejemplo canvas) -->
+    <article
+      class="card-product pequeno canvas"
+      data-title="Lienzo tipográfico – Canvas"
+      data-price="295"
+      data-variant="canvas"
+      data-size="pequeno"
+      data-images="IMAGENES/CUADRO mediano.jpeg">
+      <div class="card-media">
+        <img src="IMAGENES/cuadro mediano.jpg" alt="Lienzo tipográfico sobre canvas">
+        <span class="badge price">$295</span>
+      </div>
+      <div class="info">
+        <h3>Lienzo tipográfico</h3>
+        <p>Canvas con mensaje bíblico minimalista.</p>
+        <div class="actions">
+          <button class="btn primary add-cart" type="button">Agregar</button>
+          <button class="btn ghost view" type="button">Ver</button>
+        </div>
+      </div>
+    </article>
+
+  </main>
+
+  <!-- Modal Producto -->
+  <div class="modal" id="productModal" aria-hidden="true">
+    <div class="modal__dialog" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <button class="modal__close" aria-label="Cerrar">&times;</button>
+
+      <div class="modal__header">
+        <h3 id="modalTitle">Producto</h3>
+        <span id="modalPrice" class="modal__price"></span>
+      </div>
+
+      <div class="product-gallery">
+        <div class="gallery__stage">
+          <button class="gallery__nav left" aria-label="Anterior">&#10094;</button>
+          <img id="galleryMain" src="" alt="">
+          <button class="gallery__nav right" aria-label="Siguiente">&#10095;</button>
+        </div>
+        <div class="thumbs" id="galleryThumbs"></div>
+      </div>
+
+      <div class="modal__body">
+        <div class="modal__desc">
+          <h4>Descripción</h4>
+          <p id="modalDesc">Cuadros resistentes, materiales de alta calidad y acabados elegantes.</p>
+          <ul id="modalSpecs" class="specs">
+            <li>Material: <span data-spec="variant">—</span></li>
+            <li>Tamaño: <span data-spec="size">—</span></li>
+          </ul>
+        </div>
+        <div class="modal__buy">
+          <label for="qty">Cantidad</label>
+          <input id="qty" type="number" min="1" step="1" value="1">
+          <div class="modal__actions">
+            <a id="whatsBuy" class="btn ghost" target="_blank" rel="noopener">Preguntar por WhatsApp</a>
+            <button id="addFromModal" class="btn primary" type="button">Agregar al carrito</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal__backdrop"></div>
+  </div>
+
+  <!-- Mini-carrito -->
+  <aside class="mini-cart" aria-live="polite" aria-label="Carrito">
+    <button class="mini-cart__toggle" aria-expanded="false">
+      Carrito <span id="cartCount" class="qty">0</span>
+    </button>
+    <div class="mini-cart__panel">
+      <ul id="cartItems" class="mini-cart__items"></ul>
+      <div class="mini-cart__footer">
+        <div class="line">
+          <span>Total:</span><strong id="cartTotal">$0</strong>
+        </div>
+        <button id="openCheckout" class="btn primary" type="button">Finalizar por WhatsApp</button>
+        <button id="cartClear" class="btn ghost" type="button">Vaciar</button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Modal Checkout -->
+  <div class="modal" id="checkoutModal" aria-hidden="true">
+    <div class="modal__dialog" role="dialog" aria-modal="true" aria-labelledby="checkoutTitle">
+      <button class="modal__close" aria-label="Cerrar">&times;</button>
+      <h3 id="checkoutTitle">Datos para confirmar por WhatsApp</h3>
+
+      <form id="checkoutForm" class="checkout-form">
+        <div class="row">
+          <label>Nombre completo
+            <input name="name" type="text" placeholder="Tu nombre" required>
+          </label>
+          <label>Teléfono
+            <input name="phone" type="tel" placeholder="+52 ..." required>
+          </label>
+        </div>
+
+        <label>Método de entrega
+          <select name="delivery" required>
+            <option value="Recoger en tienda">Recoger en tienda</option>
+            <option value="Envío a domicilio">Envío a domicilio</option>
+          </select>
+        </label>
+
+        <label>Dirección (si aplica envío)
+          <input name="address" type="text" placeholder="Calle, número, colonia, ciudad, CP">
+        </label>
+
+        <label>Notas
+          <textarea name="notes" rows="3" placeholder="Color, horario, referencias…"></textarea>
+        </label>
+
+        <div class="modal__actions">
+          <button type="submit" class="btn primary">Confirmar en WhatsApp</button>
+        </div>
+      </form>
+    </div>
+    <div class="modal__backdrop"></div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer" id="contacto">
+    <p>¿Dudas? Escríbenos: <a class="accent" href="https://wa.me/528443288521" target="_blank" rel="noopener">+52 844 328 8521</a></p>
+    <small>&copy; 2025 Librería Vida — Todos los derechos reservados</small>
+  </footer>
+
+  <!-- JS (solo el de esta página) -->
+  <script src="cuadros.js" defer></script>
+ 
+
+
+</body>
+</html>

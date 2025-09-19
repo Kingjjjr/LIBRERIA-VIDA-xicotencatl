@@ -1,0 +1,478 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Admin – Librería Vida</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root{--b:#e5eaf1;--az:#0a2a43;--txt:#0f172a}
+  body{font-family:system-ui,Segoe UI,Roboto,Arial,sans-serif;margin:24px;color:var(--txt)}
+  h1{margin:0 0 16px}
+  .bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:12px 0}
+  .card{border:1px solid var(--b);border-radius:12px;padding:12px;margin:10px 0;background:#fff}
+  input,select,button{padding:.55rem .65rem;border:1px solid #cfd7e3;border-radius:10px}
+  button{cursor:pointer;font-weight:700}
+  .badge{background:var(--az);color:#fff;border-radius:6px;padding:.15rem .45rem;font-size:.8rem}
+  .ok{color:#10b981;font-weight:700}
+  .err{color:#ef4444}
+  table{width:100%;border-collapse:separate;border-spacing:0 8px}
+  th,td{text-align:left;padding:.55rem .6rem;background:#fff}
+  th{font-size:.86rem;color:#475569}
+  tr{box-shadow:0 2px 8px rgba(0,0,0,.06)}
+  .row-actions{display:flex;gap:8px;align-items:center}
+  .pill{border-radius:999px;padding:.2rem .6rem;border:1px solid var(--b);background:#fff}
+  .right{margin-left:auto}
+  .muted{color:#6b7280}
+  .btn-danger{border-color:#fecaca;background:#fee2e2}
+</style>
+
+<h1>Admin – Librería Vida</h1>
+
+<div class="card">
+  <h3>Conexión</h3>
+  <div class="bar">
+    <label>Base URL: <input id="baseUrl" size="28" placeholder="http://localhost:8000"></label>
+    <input id="email" placeholder="Email" value="admin@local">
+    <input id="pass" placeholder="Password" value="Admin123!" type="password">
+    <button id="btnLogin">Entrar</button>
+    <label class="pill">
+      <input type="checkbox" id="useLocal"> Modo local (demo)
+    </label>
+    <span id="who" class="muted"></span>
+    <span id="feedback" class="muted right"></span>
+  </div>
+  <div class="bar">
+    <button id="btnExport">Exportar pedidos (.json)</button>
+    <input id="fileImport" type="file" accept="application/json">
+    <button id="btnImport">Importar</button>
+    <button id="btnPurge" class="btn-danger">Borrar pedidos locales</button>
+  </div>
+</div>
+
+<div class="card">
+  <h3>Pedidos</h3>
+  <div class="bar">
+    <input id="q" placeholder="Buscar (cliente, #pedido, teléfono)" size="32">
+    <select id="status">
+      <option value="">Todos</option>
+      <option value="pendiente">Pendiente</option>
+      <option value="confirmado">Confirmado</option>
+      <option value="pagado">Pagado</option>
+      <option value="cancelado">Cancelado</option>
+      <!-- Estados API en inglés también se soportan en filtros -->
+      <option value="pending">pending</option>
+      <option value="confirmed">confirmed</option>
+      <option value="paid">paid</option>
+      <option value="shipped">shipped</option>
+      <option value="delivered">delivered</option>
+      <option value="cancelled">cancelled</option>
+    </select>
+    <select id="limit">
+      <option>20</option><option>50</option><option>100</option>
+    </select>
+    <button id="btnLoad">Actualizar</button>
+    <span id="pageInfo" class="muted right"></span>
+  </div>
+
+  <div id="ordersWrap">
+    <table id="ordersTable" aria-live="polite">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Fecha</th>
+          <th>Cliente</th>
+          <th>Total</th>
+          <th>Estado</th>
+          <th>Items</th>
+          <th class="right">Acciones</th>
+        </tr>
+      </thead>
+      <tbody id="ordersBody"></tbody>
+    </table>
+  </div>
+
+  <div class="bar">
+    <button id="prev">◀ Anterior</button>
+    <span id="pageInfo2" class="muted"></span>
+    <button id="next">Siguiente ▶</button>
+  </div>
+</div>
+
+<script>
+(() => {
+  // ========= Config =========
+  const els = (id) => document.getElementById(id);
+  const baseUrlInput = els('baseUrl');
+  const who = els('who');
+  const feedback = els('feedback');
+  const ordersBody = els('ordersBody');
+  const pageInfo = els('pageInfo');
+  const pageInfo2 = els('pageInfo2');
+  const useLocalChk = els('useLocal');
+
+  const LSK = {
+    baseUrl: 'vida_base_url',
+    token: 'vida_token',
+    useLocal: 'vida_use_local',
+    orders: 'vida_orders_v1',
+  };
+
+  const state = {
+    BASE_URL: localStorage.getItem(LSK.baseUrl) || 'http://localhost:8000',
+    token: localStorage.getItem(LSK.token) || '',
+    page: 1,
+    totalPages: 1,
+    useLocal: JSON.parse(localStorage.getItem(LSK.useLocal) || 'true'),
+  };
+
+  baseUrlInput.value = state.BASE_URL;
+  useLocalChk.checked = state.useLocal;
+
+  function setToken(t) {
+    state.token = t || '';
+    if (t) localStorage.setItem(LSK.token, t); else localStorage.removeItem(LSK.token);
+    who.textContent = t ? 'Autenticado' : '';
+    who.className = t ? 'ok' : 'muted';
+  }
+  if (state.token) { who.textContent = 'Autenticado'; who.className='ok'; }
+
+  baseUrlInput.addEventListener('change', () => {
+    state.BASE_URL = baseUrlInput.value.trim();
+    localStorage.setItem(LSK.baseUrl, state.BASE_URL);
+  });
+  useLocalChk.addEventListener('change', () => {
+    state.useLocal = useLocalChk.checked;
+    localStorage.setItem(LSK.useLocal, JSON.stringify(state.useLocal));
+    feedback.textContent = state.useLocal ? 'Modo local activo' : 'Modo API activo';
+    loadOrders(1);
+  });
+
+  // ========= Helpers =========
+  function fmtMoney(n){
+    // admite totales en pesos (float) o en centavos (int)
+    if (n == null) return '$0.00';
+    const isCents = Number.isInteger(n) && Math.abs(n) > 1000;
+    const pesos = isCents ? (n/100) : Number(n);
+    return pesos.toLocaleString('es-MX',{style:'currency',currency:'MXN'});
+  }
+  function safe(v, def='—'){ return (v==null || v==='') ? def : v; }
+  function debounce(fn,ms){ let t; return (...a)=>{ clearTimeout(t); t=setTimeout(()=>fn(...a),ms); }; }
+  function pretty(o){ try{ return JSON.stringify(o,null,2); }catch{ return String(o); } }
+
+  // ========= API (cuando useLocal=false) =========
+  async function api(path, opts={}){
+    const url = state.BASE_URL.replace(/\/+$/,'') + path;
+    const headers = { 'Content-Type': 'application/json', ...(opts.headers||{}) };
+    if (state.token) headers.Authorization = `Bearer ${state.token}`;
+    const res = await fetch(url, { ...opts, headers });
+    if (!res.ok) {
+      let msg = res.status + ' ' + res.statusText;
+      try { const j = await res.json(); msg = j.error || j.message || msg; } catch {}
+      throw new Error(msg);
+    }
+    if (res.status === 204) return null;
+    return res.json();
+  }
+
+  // ========= LOCAL STORAGE (modo demo) =========
+  function readLocal(){ try{ return JSON.parse(localStorage.getItem(LSK.orders)||'[]'); }catch{ return []; } }
+  function writeLocal(list){ try{ localStorage.setItem(LSK.orders, JSON.stringify(list||[])); }catch{} }
+
+  function normalizeOrderLocal(o, idx=0){
+    // pedidos creados por el checkout: {id, createdAt, status, payment, delivery, customer, address, items[], total}
+    const id = o.id || ('VIDA-'+(idx+1));
+    const num = o.order_number || o.number || id;
+    const ts = o.createdAt || o.created_at || new Date().toISOString();
+    const customer = o.customer || {};
+    const total =
+      typeof o.total_cents === 'number' ? o.total_cents :
+      (typeof o.total === 'number' ? Math.round(o.total*100) : 0);
+    const status = o.status || 'pendiente';
+    const items = Array.isArray(o.items) ? o.items : [];
+    return { id, num, ts, customer, total, status, items, raw:o };
+  }
+
+  function filterSortPaginateLocal(all, {q,status,limit,page}){
+    let list = all.map(normalizeOrderLocal);
+    if (status){
+      list = list.filter(o => (o.status||'').toLowerCase() === status.toLowerCase());
+    }
+    if (q){
+      const qq = q.toLowerCase();
+      list = list.filter(o =>
+        o.num.toLowerCase().includes(qq) ||
+        (o.customer.name||'').toLowerCase().includes(qq) ||
+        (o.customer.phone||'').toLowerCase().includes(qq)
+      );
+    }
+    // más nuevos primero
+    list.sort((a,b)=> new Date(b.ts) - new Date(a.ts));
+    const total = list.length;
+    const pages = Math.max(1, Math.ceil(total/limit));
+    const start = (page-1)*limit;
+    const items = list.slice(start, start+limit);
+    return {items, total, page, pages};
+  }
+
+  function renderRows(items){
+    ordersBody.innerHTML = '';
+    for (const o of items){
+      const lines = (o.items||[]).map(i=>{
+        const title = i.title || i.name || i.titulo || 'Producto';
+        const qty = Number(i.qty||1);
+        return `${title} × ${qty}`;
+      }).join(', ');
+
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><strong>${o.num}</strong></td>
+        <td>${new Date(o.ts).toLocaleString('es-MX')}</td>
+        <td>${safe(o.customer.name)} <span class="muted">${o.customer.phone? '• '+o.customer.phone : ''}</span></td>
+        <td>${fmtMoney(o.total)}</td>
+        <td><span class="badge">${o.status}</span></td>
+        <td>${lines || '—'}</td>
+        <td class="right">
+          <div class="row-actions">
+            <select class="pill act-status" data-id="${o.id}" data-cur="${o.status}">
+              ${['pendiente','confirmado','pagado','cancelado','pending','confirmed','paid','shipped','delivered','cancelled'].map(s=>`<option ${o.status===s?'selected':''}>${s}</option>`).join('')}
+            </select>
+            <button class="pill view" data-id="${o.id}">Ver</button>
+            <button class="pill wa" data-id="${o.id}">WhatsApp</button>
+          </div>
+        </td>
+      `;
+      ordersBody.appendChild(tr);
+    }
+  }
+
+  function loadOrdersLocal(page=1){
+    const q = els('q').value.trim();
+    const status = els('status').value.trim();
+    const limit = Number(els('limit').value||20);
+    const all = readLocal();
+    const data = filterSortPaginateLocal(all,{q,status,limit,page});
+    state.page = data.page;
+    state.totalPages = data.pages;
+    renderRows(data.items);
+    pageInfo.textContent = `Página ${state.page} de ${state.totalPages}`;
+    pageInfo2.textContent = `(${data.total} total)`;
+    feedback.textContent = `Mostrando ${data.items.length} pedido(s)`;
+  }
+
+  function getLocalById(id){
+    const all = readLocal();
+    const idx = all.findIndex(x => (x.id === id) || (x.order_number === id) || (x.number === id));
+    return {all, idx, order: idx>=0 ? all[idx] : null};
+  }
+
+  function setLocalStatus(id, newStatus){
+    const {all, idx} = getLocalById(id);
+    if (idx<0) throw new Error('Pedido no encontrado');
+    all[idx].status = newStatus;
+    writeLocal(all);
+  }
+
+  function waTextFromLocal(order){
+    // espejo del checkout
+    const money = (n)=>fmtMoney(n).replace(/\u00A0/g,' ');
+    const cents = typeof order.total_cents === 'number';
+    const total = cents ? order.total_cents : Math.round((order.total||0)*100);
+    const items = (order.items||[]).map((it, i) => {
+      const qty = Number(it.qty||1), price = Number(it.price||it.precio||0);
+      const line = `${i+1}. ${(it.title||it.name||it.titulo||'Producto')} — ${qty} x ${fmtMoney(price)} = ${fmtMoney(qty*price)}`;
+      return line;
+    }).join('\n');
+
+    const address = order.address ? [
+      order.address.street, order.address.int, order.address.neighborhood,
+      order.address.city, order.address.state, order.address.zip
+    ].filter(Boolean).join(', ') : '';
+
+    return [
+      '👋 ¡Hola Librería Vida!',
+      'Quiero consultar/confirmar mi pedido:',
+      '',
+      '🧾 Pedido: ' + (order.id || '—'),
+      '👤 ' + (order.customer?.name || '—'),
+      '📧 ' + (order.customer?.email || '—'),
+      '📱 ' + (order.customer?.phone || '—'),
+      '💳 Pago: ' + (order.payment || '—'),
+      '🚚 Entrega: ' + (order.delivery === 'envio' ? 'Envío a domicilio' : (order.delivery||'—')),
+      address ? ('📦 Dirección: ' + address) : '',
+      order.note ? ('📝 Nota: ' + order.note) : '',
+      '',
+      '🛒 Artículos:',
+      items || '—',
+      '',
+      'Total: ' + money(total)
+    ].filter(Boolean).join('\n');
+  }
+
+  // ========= Login (API) =========
+  els('btnLogin').addEventListener('click', async () => {
+    if (state.useLocal){
+      feedback.textContent = 'Modo local: no se requiere login.';
+      setToken('');
+      return;
+    }
+    try{
+      feedback.textContent = 'Autenticando…';
+      const email = els('email').value.trim();
+      const password = els('pass').value.trim();
+      const data = await api('/auth/login', { method:'POST', body: JSON.stringify({ email, password }) });
+      if (!data?.access_token) throw new Error('Sin access_token en respuesta');
+      setToken(data.access_token);
+      feedback.textContent = 'Listo • token guardado';
+    }catch(e){
+      feedback.textContent = 'Error login: ' + e.message;
+      who.textContent = ''; who.className = 'err';
+      setToken('');
+    }
+  });
+
+  // ========= Listado (API/Local) =========
+  async function loadOrders(page=1){
+    if (state.useLocal) return loadOrdersLocal(page);
+
+    // API
+    ordersBody.innerHTML = '';
+    const q = els('q').value.trim();
+    const status = els('status').value;
+    const limit = Number(els('limit').value || 20);
+    const params = new URLSearchParams({ page, limit });
+    if (q) params.set('q', q);
+    if (status) params.set('status', status);
+
+    try{
+      feedback.textContent = 'Cargando…';
+      const data = await api('/orders?'+params.toString(), { method:'GET' });
+      const items = Array.isArray(data) ? data : (data.items || []);
+      state.page = Array.isArray(data) ? page : (data.page || page || 1);
+      state.totalPages = Array.isArray(data) ? (items.length < limit ? page : page+1) : (data.pages || 1);
+
+      // normaliza API -> filas
+      const mapped = items.map((o, idx) => ({
+        id: o.id ?? o.order_id ?? o.number ?? o.order_number ?? String(idx+1),
+        num: o.order_number ?? o.number ?? (o.id ?? String(idx+1)),
+        ts: o.created_at || o.createdAt || o.date || new Date().toISOString(),
+        customer: { name: o.customer?.name || o.name || o.customer_name || '—', phone: o.customer?.phone || o.phone || '' },
+        total: (typeof o.total_cents === 'number') ? o.total_cents : (typeof o.total === 'number' ? Math.round(o.total*100) : 0),
+        status: o.status || 'pending',
+        items: (o.items||[]).map(i=>({title:i.title, qty:i.qty}))
+      }));
+      renderRows(mapped);
+
+      pageInfo.textContent = `Página ${state.page} de ${state.totalPages}`;
+      pageInfo2.textContent = '';
+      feedback.textContent = `Mostrando ${items.length} pedido(s)`;
+    }catch(e){
+      feedback.textContent = 'Error cargando pedidos: ' + e.message;
+    }
+  }
+
+  els('btnLoad').addEventListener('click', () => loadOrders(1));
+  els('q').addEventListener('input', debounce(() => loadOrders(1), 350));
+  els('status').addEventListener('change', () => loadOrders(1));
+  els('limit').addEventListener('change', () => loadOrders(1));
+  els('prev').addEventListener('click', () => { if (state.page>1) loadOrders(state.page-1); });
+  els('next').addEventListener('click', () => { if (state.page<state.totalPages) loadOrders(state.page+1); });
+
+  // ========= Acciones por fila =========
+  document.addEventListener('click', async (e) => {
+    const btn = e.target.closest('button.pill');
+    if (!btn) return;
+    const id = btn.dataset.id;
+
+    if (btn.classList.contains('view')){
+      try{
+        if (state.useLocal){
+          const {order} = getLocalById(id);
+          if (!order) throw new Error('No encontrado');
+          alert(pretty(order));
+        } else {
+          const o = await api('/orders/'+id, { method:'GET' });
+          alert(pretty(o));
+        }
+      }catch(err){ alert('Error: '+err.message); }
+    }
+
+    if (btn.classList.contains('wa')){
+      try{
+        let msg = '';
+        if (state.useLocal){
+          const {order} = getLocalById(id);
+          if (!order) throw new Error('No encontrado');
+          msg = waTextFromLocal(order);
+        } else {
+          // si tu backend devuelve el link directo, usa ese endpoint:
+          // const data = await api(`/orders/${id}/whatsapp-link`);
+          // window.open(data.whatsapp_link, '_blank','noopener'); return;
+          const o = await api('/orders/'+id, { method:'GET' });
+          const itemsLine = (o.items||[]).map(i => `${i.title} (x${i.qty})`).join(', ');
+          const tot = fmtMoney(o.total_cents||Math.round((o.total||0)*100));
+          msg = `Hola, confirmo pedido #${o.order_number||id}: ${itemsLine} — Total ${tot}`;
+        }
+        window.open('https://wa.me/528443288521?text='+encodeURIComponent(msg), '_blank','noopener');
+      }catch(err){ alert('Error: '+err.message); }
+    }
+  });
+
+  document.addEventListener('change', async (e) => {
+    const sel = e.target.closest('select.act-status');
+    if (!sel) return;
+    const id = sel.dataset.id;
+    const newStatus = sel.value;
+    try{
+      if (state.useLocal){
+        setLocalStatus(id, newStatus);
+        feedback.textContent = 'Estado (local) actualizado a '+newStatus;
+        loadOrders(state.page);
+      } else {
+        await api('/orders/'+id, { method:'PATCH', body: JSON.stringify({ status: newStatus }) });
+        feedback.textContent = 'Estado actualizado a '+newStatus;
+      }
+    }catch(err){
+      feedback.textContent = 'Error actualizando estado: '+err.message;
+      sel.value = sel.dataset.cur; // revertir
+    }
+  });
+
+  // ========= Import/Export/Purge (local) =========
+  els('btnExport').addEventListener('click', () => {
+    if (!state.useLocal){ alert('Activa "Modo local (demo)" para exportar pedidos locales.'); return; }
+    const data = readLocal();
+    const blob = new Blob([JSON.stringify(data,null,2)], {type:'application/json'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'vida_orders_export.json';
+    a.click();
+    URL.revokeObjectURL(a.href);
+  });
+
+  els('btnImport').addEventListener('click', async () => {
+    if (!state.useLocal){ alert('Activa "Modo local (demo)" para importar.'); return; }
+    const fi = els('fileImport');
+    if (!fi.files || !fi.files[0]){ alert('Selecciona un archivo .json'); return; }
+    const txt = await fi.files[0].text();
+    try{
+      const parsed = JSON.parse(txt);
+      if (!Array.isArray(parsed)) throw new Error('El JSON debe ser un arreglo de pedidos');
+      writeLocal(parsed);
+      feedback.textContent = `Importados ${parsed.length} pedido(s).`;
+      loadOrders(1);
+    }catch(err){
+      alert('Error importando: ' + err.message);
+    }
+  });
+
+  els('btnPurge').addEventListener('click', () => {
+    if (!state.useLocal){ alert('Activa "Modo local (demo)" para borrar.'); return; }
+    if (confirm('¿Borrar TODOS los pedidos locales? Esta acción no se puede deshacer.')){
+      writeLocal([]);
+      loadOrders(1);
+      feedback.textContent = 'Pedidos locales borrados.';
+    }
+  });
+
+  // Auto-cargar
+  loadOrders(1);
+})();
+</script>
