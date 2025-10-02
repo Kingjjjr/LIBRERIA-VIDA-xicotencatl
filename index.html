@@ -1,32 +1,87 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <!-- Librería Vida — Home (tema claro + mobile-first) -->
+  <!-- ===================== META BASE ===================== -->
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Librería Vida — Biblias, Libros, Regalos y Cuadros</title>
   <meta name="description" content="Librería Vida: biblias, libros, regalos cristianos y cuadros. Envíos a todo México y asesoría por WhatsApp." />
-  <link rel="icon" href="IMAGENES/favicon.png" type="image/png" />
+
+  <!-- ===================== SEO / CANONICAL ===================== -->
+  <link rel="canonical" href="https://libreriavida.mx/" />
+
+  <!-- ===================== ICONOS / MANIFEST ===================== -->
+  <link rel="icon" href="/IMAGENES/favicon.png" type="image/png" sizes="32x32" />
+  <link rel="apple-touch-icon" href="/IMAGENES/apple-touch-icon.png" />
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <meta name="theme-color" content="#1d4ed8" />
+
+  <!-- ===================== PWA / iOS ===================== -->
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+  <!-- ===================== SOCIAL (OG / Twitter) ===================== -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Librería Vida — Biblias, Libros, Regalos y Cuadros" />
+  <meta property="og:description" content="Biblias, libros, regalos cristianos y cuadros. Envíos a todo México y asesoría por WhatsApp." />
+  <meta property="og:image" content="https://libreriavida.mx/IMAGENES/og-cover.jpg" />
+  <meta property="og:url" content="https://libreriavida.mx/" />
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <!-- ===================== FUENTES ===================== -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet" />
 
-  <!-- Estilos -->
+  <!-- ===================== CSS PRINCIPAL ===================== -->
   <link rel="stylesheet" href="css.css" />
+
+  <!-- ===================== PRELOAD LCP (coincide con el slide #1) ===================== -->
+  <link rel="preload" as="image"
+        href="IMAGENES/ccl.avif"
+        imagesrcset="IMAGENES/ccl.avif 1200w, IMAGENES/ccl-800.avif 800w"
+        imagesizes="100vw" />
+
+  <!-- ===================== OVERRIDES CRÍTICOS (seguros) ===================== -->
+  <style>
+    /* Slider mínimo y robusto */
+    .hero{position:relative;overflow:hidden;border-radius:18px;margin:10px auto;max-width:1200px;background:#f8fafc;border:1px solid #e5e7eb}
+    .slides{display:flex;transition:transform .5s cubic-bezier(.16,1,.3,1);will-change:transform}
+    .slide{flex:0 0 100%;min-width:100%}
+    .slide img{display:block;width:100%;height:auto;object-fit:cover}
+    .slider-btn{position:absolute;top:50%;transform:translateY(-50%);width:42px;height:42px;border:0;border-radius:50%;color:#fff;background:rgba(15,23,42,.45);cursor:pointer}
+    .slider-btn.prev{left:8px}.slider-btn.next{right:8px}
+    .dots{position:absolute;left:0;right:0;bottom:10px;display:flex;gap:6px;justify-content:center}
+    .dots button{width:10px;height:10px;border-radius:999px;border:0;background:#cbd5e1;cursor:pointer}
+    .dots button.active{background:#1d4ed8}
+
+    /* Modal nítido (backdrop abajo, diálogo arriba) */
+    .modal{position:fixed;inset:0;display:none;z-index:1000}
+    .modal.open{display:block}
+    .modal__backdrop{position:absolute;inset:0;background:rgba(0,0,0,.35);backdrop-filter:blur(2px);z-index:1}
+    .modal__dialog{position:absolute;inset:8vh 12px auto 12px;left:50%;transform:translateX(-50%);width:min(100%,980px);background:#fff;border:1px solid #e5e7eb;border-radius:16px;padding:12px;box-shadow:0 10px 30px rgba(2,6,23,.08);z-index:2}
+    .gallery__nav{z-index:3}
+
+    /* Botón flotante Asesor */
+    .vida-advisor-btn{position:fixed;right:16px;bottom:84px;z-index:50;padding:.7rem 1rem;border:0;border-radius:999px;background:#1d4ed8;color:#fff;font-weight:800;box-shadow:0 10px 20px rgba(0,0,0,.25);cursor:pointer}
+
+    /* Pequeñas mejoras accesibles */
+    .btn:focus-visible,.slider-btn:focus-visible,.chip:focus-visible{outline:3px solid rgba(29,78,216,.35);outline-offset:2px}
+  </style>
+
+  <noscript><style>.menu-toggle{display:none}.nav{display:flex}.modal{display:none!important}</style></noscript>
 </head>
 
 <body>
 <header class="header" role="banner">
-  <div class="flag-strip" aria-hidden="true"></div>
-
   <!-- LOGO -->
-  <div class="logo" aria-label="Logo Librería Vida">
-    <img src="IMAGENES/images (2).png" alt="Librería Vida" width="46" height="46" />
+  <a class="logo" aria-label="Inicio — Librería Vida" href="/">
+    <img src="IMAGENES/LOGO-VIDA.png" alt="Librería Vida" width="46" height="46" />
     <h1>Librería <span>Vida</span></h1>
-  </div>
+  </a>
 
   <!-- BUSCADOR -->
-  <div class="header-search">
+  <div class="header-search" role="search">
     <label for="searchTop" class="sr-only">Buscar producto</label>
     <div class="group">
       <svg viewBox="0 0 24 24" aria-hidden="true" class="search-icon">
@@ -37,14 +92,14 @@
   </div>
 
   <!-- MENÚ -->
-  <button class="menu-toggle" aria-label="Abrir menú" aria-expanded="false" aria-controls="nav">
+  <button class="menu-toggle" type="button" aria-label="Abrir menú" aria-expanded="false" aria-controls="nav">
     <span></span><span></span><span></span>
   </button>
 
-  <!-- CARRITO -->
+  <!-- CARRITO (mini) -->
   <div class="header-cart" id="headerCart">
-    <button class="btn icon" id="cartToggle" aria-expanded="false" aria-controls="miniCartPanel">
-      🛒 <span id="cartCount" class="badge">0</span>
+    <button class="btn icon" id="cartToggle" type="button" aria-expanded="false" aria-controls="miniCartPanel" title="Carrito">
+      🛒 <span id="cartCount" class="badge" aria-live="polite" aria-atomic="true">0</span>
     </button>
     <div id="miniCartPanel" class="cart-panel" role="dialog" aria-modal="false" aria-label="Carrito" hidden>
       <ul id="cartItems" class="mini-cart__items"></ul>
@@ -54,7 +109,7 @@
         </div>
         <div class="row">
           <a id="cartWhats" class="btn primary" target="_blank" rel="noopener">Confirmar por WhatsApp</a>
-          <button id="cartClear" class="btn ghost">Vaciar</button>
+          <button id="cartClear" class="btn ghost" type="button">Vaciar</button>
         </div>
       </div>
     </div>
@@ -72,28 +127,36 @@
   <div class="nav-backdrop" hidden></div>
 </header>
 
-<!-- Hero -->
+<!-- ===================== HERO / SLIDER ===================== -->
 <section id="hero" class="hero" aria-label="Promociones destacadas">
-  <div class="slides">
-    <img src="ccl.png" alt="Promoción del mes" loading="eager" />
-    <img src="ccl.png" alt="Biblias Inspira — nuevas ediciones" loading="lazy" />
-    <img src="BIBLIAS NIÑOS.png" alt="Biblias para niños con ilustraciones" loading="lazy" />
+  <div class="slides" id="slides">
+    <div class="slide">
+      <img src="IMAGENES/ES BUENO CONOCER LA BIBLIA.png" alt="Promoción del mes" decoding="async" loading="eager" />
+    </div>
+    <div class="slide">
+      <img src="IMAGENES/1.png" alt="Biblias Inspira — nuevas ediciones" decoding="async" loading="lazy" />
+    </div>
+    <div class="slide">
+      <img src="IMAGENES/BIBLIA CHEQUERA.png" alt="Biblias para niños con ilustraciones" decoding="async" loading="lazy" />
+    </div>
   </div>
-  <button class="slider-btn prev" aria-label="Anterior">❮</button>
-  <button class="slider-btn next" aria-label="Siguiente">❯</button>
-  <div class="dots" aria-label="Indicadores"></div>
+
+  <button class="slider-btn prev" type="button" aria-label="Anterior">❮</button>
+  <button class="slider-btn next" type="button" aria-label="Siguiente">❯</button>
+  <div class="dots" id="dots" aria-label="Indicadores"></div>
 </section>
 
-<!-- Filtros/chips -->
-<section class="toolbar">
-  <div class="filters">
-    <button class="chip active" data-filter="all">Todo</button>
-    <button class="chip" data-filter="BIBLIAS">Biblias</button>
-    <button class="chip" data-filter="LIBROS">Libros</button>
+<!-- ===================== FILTROS / CHIPS ===================== -->
+<section class="toolbar" aria-label="Filtros de catálogo">
+  <div class="filters" role="tablist" aria-label="Filtrar por categoría">
+    <button class="chip active" type="button" role="tab" aria-selected="true" data-filter="all">Todo</button>
+    <button class="chip" type="button" role="tab" aria-selected="false" data-filter="BIBLIAS">Biblias</button>
+    <button class="chip" type="button" role="tab" aria-selected="false" data-filter="LIBROS">Libros</button>
+    <button class="chip" type="button" role="tab" aria-selected="false" data-filter="CUADROS">Cuadros</button>
   </div>
 </section>
 
-<!-- Grid de productos -->
+<!-- ===================== GRID DE PRODUCTOS ===================== -->
 <main id="contenido">
   <section class="grid" id="grid" aria-label="Catálogo de productos">
     <!-- Card 1 -->
@@ -110,7 +173,7 @@
       data-stock="16"
       data-compareat="675">
       <figure class="card-media">
-        <img src="BIBLIAS/BIBLIA-CHEQUERA-1.png" alt="Biblia RV60 Chequera">
+        <img src="BIBLIAS/BIBLIA-CHEQUERA-1.png" alt="Biblia RV60 Chequera color variado" width="500" height="500" loading="lazy">
         <span class="badge price">$540</span>
         <span class="badge sale" aria-hidden="true">Oferta</span>
       </figure>
@@ -119,12 +182,12 @@
         <p class="meta">Compacta con zipper · RV60</p>
 
         <div class="swatches" role="radiogroup" aria-label="Colores">
-          <button class="sw" aria-label="lila-negro" data-color="lila-negro" data-image="biblias/BIBLIA-CHEQUERA-LILA.png"></button>
-          <button class="sw" aria-label="Salmon-Beige-rosa" data-color="Salmon-Beige-rosa" data-image="biblias/BIBLIA-CHEQUERA-ROSA BEIGE-Y.SALMON.png"></button>
-          <button class="sw" aria-label="rosa-beige-rosita" data-color="rosa-beige-rosita" data-image="biblias/BIBLIA-CHEQUERA-ROSA BEIGE.png"></button>
-          <button class="sw" aria-label="rosa-rosita" data-color="rosa-rosita" data-image="biblias/BIBLIA-CHEQUERA-ROSA-Y-ROSA-CLARO.png"></button>
-          <button class="sw" aria-label="rosa-celeste" data-color="rosa-celeste" data-image="biblias/BIBLIA-CHEQUERA-1.png"></button>
-          <button class="sw" aria-label="salmon-beige" data-color="salmon-beige" data-image="biblias/BIBLIA-CHEQUERA-SALMON-BEIJE.png"></button>
+          <button class="sw" role="radio" aria-checked="false" aria-label="lila-negro" data-color="lila-negro" data-image="biblias/BIBLIA-CHEQUERA-LILA.png"></button>
+          <button class="sw" role="radio" aria-checked="false" aria-label="Salmon-Beige-rosa" data-color="Salmon-Beige-rosa" data-image="biblias/BIBLIA-CHEQUERA-ROSA BEIGE-Y.SALMON.png"></button>
+          <button class="sw" role="radio" aria-checked="false" aria-label="rosa-beige-rosita" data-color="rosa-beige-rosita" data-image="biblias/BIBLIA-CHEQUERA-ROSA BEIGE.png"></button>
+          <button class="sw" role="radio" aria-checked="false" aria-label="rosa-rosita" data-color="rosa-rosita" data-image="biblias/BIBLIA-CHEQUERA-ROSA-Y-ROSA-CLARO.png"></button>
+          <button class="sw" role="radio" aria-checked="true" aria-label="rosa-celeste" data-color="rosa-celeste" data-image="biblias/BIBLIA-CHEQUERA-1.png"></button>
+          <button class="sw" role="radio" aria-checked="false" aria-label="salmon-beige" data-color="salmon-beige" data-image="biblias/BIBLIA-CHEQUERA-SALMON-BEIJE.png"></button>
         </div>
 
         <div class="actions">
@@ -134,27 +197,28 @@
       </div>
     </article>
 
-    <!-- Card 2 -->
+    <!-- Card 2 (ejemplo) -->
     <article class="card-product BIBLIAS"
       data-id="BIB-001"
       data-title="Biblia RV60 con letra grande, tapa dura"
       data-price="475"
+      data-desc="Letra grande y tapa dura resistente."
       data-variant="letra-grande"
       data-version="rv60"
       data-size="manual"
       data-binding="tapa-dura"
-      data-images="ORIGEN/B.ORIGEN.GTC%201.jpg|ORIGEN/B.ORIGEN.GTC%202.jpg|ORIGEN/B.ORIGEN.GTC%203.jpg"
+      data-images="IMAGENES/ORIGEN/B.ORIGEN.GTC%201.jpg|IMAGENES/ORIGEN/B.ORIGEN.GTC%202.jpg|IMAGENES/ORIGEN/B.ORIGEN.GTC%203.jpg"
       data-stock="2"
       data-compareat="569">
       <figure class="card-media">
-        <img src="ORIGEN/B.ORIGEN.GTC%201.jpg" alt="Biblia RV60 con letra grande, tapa dura, color negro">
+        <img src="IMAGENES/ORIGEN/B.ORIGEN.GTC%201.jpg" alt="Biblia RV60 con letra grande, tapa dura, color negro" width="500" height="500" loading="lazy">
         <span class="badge price">$475</span>
       </figure>
       <div class="info">
         <h3>Biblia RV60 con letra grande, tapa dura</h3>
-        <p class="meta">letra grande · RV60 · tapa dura</p>
+        <p class="meta">Letra grande · RV60 · Tapa dura</p>
         <div class="swatches" role="radiogroup" aria-label="Colores">
-          <button class="sw" aria-label="Negro" data-color="Negro" data-image="ORIGEN/B.ORIGEN.GTC%201.jpg"></button>
+          <button class="sw" role="radio" aria-checked="true" aria-label="Negro" data-color="Negro" data-image="IMAGENES/ORIGEN/B.ORIGEN.GTC%201.jpg"></button>
         </div>
         <div class="actions">
           <button class="btn outline view" type="button">Ver</button>
@@ -164,14 +228,19 @@
     </article>
 
     <!-- Card 3 -->
-    <article class="card-product CUADROS" data-title="Cuadro de Madera" data-price="320" data-images="IMAGENES/cuadro-1.jpg|IMAGENES/cuadro-2.jpg|IMAGENES/cuadro-3.jpg">
+    <article class="card-product CUADROS"
+      data-id="C-101"
+      data-title="Cuadro de Madera"
+      data-price="320"
+      data-desc="Decoración con versículo en madera."
+      data-images="IMAGENES/cuadro-1.jpg|IMAGENES/cuadro-2.jpg|IMAGENES/cuadro-3.jpg">
       <figure class="card-media">
-        <img src="" alt="Cuadro de madera con versículo" loading="lazy" />
+        <img src="IMAGENES/10-porciento.png" alt="Cuadro de madera con versículo" loading="lazy" width="500" height="500" />
         <span class="badge price">$320</span>
       </figure>
       <div class="info">
         <h3>Cuadro de Madera</h3>
-        <p class="meta">Decoración con mensaje.</p>
+        <p class="meta">Decoración con mensaje</p>
         <div class="actions">
           <button class="btn outline view" type="button">Ver</button>
           <button class="btn primary add-cart" type="button">Agregar</button>
@@ -183,21 +252,22 @@
   <div id="emptyState" class="empty" hidden>No encontramos resultados con tus filtros y búsqueda.</div>
 </main>
 
-<!-- Modal de producto -->
+<!-- ===================== MODAL DE PRODUCTO ===================== -->
 <div class="modal" id="productModal" aria-hidden="true">
   <div class="modal__dialog" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-    <button class="modal__close" aria-label="Cerrar">×</button>
+    <button class="modal__close" type="button" aria-label="Cerrar">×</button>
     <div class="modal__body">
       <div class="product-gallery">
         <div class="gallery__stage">
-          <button class="gallery__nav left" aria-label="Anterior">❮</button>
+          <button class="gallery__nav left" type="button" aria-label="Anterior">❮</button>
           <img id="galleryMain" src="" alt="" />
-          <button class="gallery__nav right" aria-label="Siguiente">❯</button>
+          <button class="gallery__nav right" type="button" aria-label="Siguiente">❯</button>
         </div>
         <div class="thumbs" id="galleryThumbs"></div>
       </div>
       <div class="modal__info">
         <h3 id="modalTitle">Producto</h3>
+        <p id="modalDesc" class="muted"></p>
         <div class="modal__actions">
           <a id="whatsBuy" class="btn" target="_blank" rel="noopener">Consultar por WhatsApp</a>
         </div>
@@ -207,31 +277,148 @@
   <div class="modal__backdrop" aria-hidden="true"></div>
 </div>
 
-<!-- Suscripción / Newsletter -->
+<!-- ===================== NEWSLETTER ===================== -->
 <section id="suscripcion" class="newsletter" aria-label="Suscripción a promociones">
-  <div class="container">
-    <div class="newsletter__card">
-      <header>
-        <h2>Recibe promociones y lanzamientos</h2>
-        <p class="muted">1–2 correos al mes. Nada de spam.</p>
-      </header>
-      <form id="nlForm" class="nl-form" novalidate>
-        <label class="sr-only" for="nlEmail">Correo</label>
-        <input id="nlEmail" type="email" placeholder="tu@correo.com" required />
-        <button class="btn primary" type="submit">Suscribirme</button>
-      </form>
-      <small id="nlMsg" class="nl-msg" aria-live="polite"></small>
-    </div>
+  <div class="newsletter__card">
+    <header>
+      <h2>Recibe promociones y lanzamientos</h2>
+      <p class="muted">1–2 correos al mes. Nada de spam.</p>
+    </header>
+    <form id="nlForm" class="nl-form" novalidate>
+      <label class="sr-only" for="nlEmail">Correo</label>
+      <input id="nlEmail" type="email" placeholder="tu@correo.com" required />
+      <button class="btn primary" type="submit">Suscribirme</button>
+    </form>
+    <small id="nlMsg" class="nl-msg" aria-live="polite"></small>
   </div>
 </section>
 
-<!-- Pie -->
+<!-- ===================== TEMPLATES (FullScreen & Checkout) ===================== -->
+<template id="fsModalTmpl">
+  <div class="fs-backdrop" role="presentation">
+    <button class="fs-close" aria-label="Cerrar">×</button>
+    <div class="fs-modal" role="dialog" aria-modal="true" aria-labelledby="fsTitle">
+      <div class="fs-left">
+        <div class="fs-slider">
+          <button class="fs-arrow left" aria-label="Anterior">&#10094;</button>
+          <div class="fs-stage"></div>
+          <button class="fs-arrow right" aria-label="Siguiente">&#10095;</button>
+          <div class="fs-nav" aria-label="Miniaturas"></div>
+        </div>
+      </div>
+      <div class="fs-right">
+        <div id="fsTitle" class="fs-title"></div>
+        <div class="fs-price"><div class="now"></div><div class="before" style="display:none"></div></div>
+        <div class="prod-meta">
+          <div class="promo" id="modalPromo" hidden>
+            <span class="badge-oferta">OFERTA</span>
+            <span class="promo-text"></span>
+          </div>
+          <div class="stock" id="modalStock" aria-live="polite">
+            <span class="stock-dot" aria-hidden="true"></span>
+            <span class="stock-text">En stock</span>
+          </div>
+        </div>
+        <div class="fs-swatches" id="fsSwatches" aria-label="Variantes de color"></div>
+        <div class="fs-meta"></div>
+        <div class="fs-actions">
+          <button class="btn-xl btn-ghost" id="fsAdd">Agregar al carrito</button>
+          <button class="btn-xl btn-primary" id="fsBuy">Comprar ahora</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<template id="coModalTmpl">
+  <div class="co-backdrop" role="presentation">
+    <div class="co-modal" role="dialog" aria-modal="true" aria-labelledby="coTitle">
+      <div class="co-flag" aria-hidden="true"></div>
+      <div class="co-hdr">
+        <div id="coTitle" class="co-title">Datos para envío y contacto</div>
+        <button class="co-close" aria-label="Cerrar">×</button>
+      </div>
+      <div class="co-body">
+        <div class="co-col">
+          <h4>Información del cliente</h4>
+          <div class="co-grid">
+            <div class="co-field full">
+              <label class="co-label" for="coName">Nombre completo *</label>
+              <input class="co-input" id="coName" autocomplete="name" placeholder="Ej. Ana López" required>
+              <div class="co-err">Ingresa tu nombre.</div>
+            </div>
+            <div class="co-field">
+              <label class="co-label" for="coPhone">Teléfono *</label>
+              <input class="co-input" id="coPhone" type="tel" inputmode="tel" autocomplete="tel" placeholder="10 dígitos" required>
+              <div class="co-err">Teléfono inválido.</div>
+            </div>
+            <div class="co-field">
+              <label class="co-label" for="coEmail">Correo *</label>
+              <input class="co-input" id="coEmail" type="email" autocomplete="email" placeholder="tucorreo@dominio.com" required>
+              <div class="co-err">Correo inválido.</div>
+            </div>
+            <div class="co-field full">
+              <label class="co-label" for="coStreet">Calle y número *</label>
+              <input class="co-input" id="coStreet" autocomplete="address-line1" placeholder="Calle, número" required>
+              <div class="co-err">Requerido.</div>
+            </div>
+            <div class="co-field">
+              <label class="co-label" for="coCol">Colonia *</label>
+              <input class="co-input" id="coCol" autocomplete="address-line2" placeholder="Colonia" required>
+              <div class="co-err">Requerido.</div>
+            </div>
+            <div class="co-field">
+              <label class="co-label" for="coCP">C.P. *</label>
+              <input class="co-input" id="coCP" inputmode="numeric" pattern="\d{5}" placeholder="5 dígitos" required>
+              <div class="co-err">C.P. inválido.</div>
+            </div>
+            <div class="co-field">
+              <label class="co-label" for="coCity">Ciudad *</label>
+              <input class="co-input" id="coCity" autocomplete="address-level2" placeholder="Ciudad" required>
+              <div class="co-err">Requerido.</div>
+            </div>
+            <div class="co-field">
+              <label class="co-label" for="coState">Estado *</label>
+              <input class="co-input" id="coState" autocomplete="address-level1" placeholder="Estado" required>
+              <div class="co-err">Requerido.</div>
+            </div>
+            <div class="co-field full">
+              <label class="co-label" for="coNotes">Notas (opcional)</label>
+              <textarea class="co-textarea" id="coNotes" placeholder="Referencias para entrega, horario, entre calles…"></textarea>
+            </div>
+          </div>
+          <label class="co-terms">
+            <input id="coTerms" type="checkbox">
+            <span>
+              Acepto los <a href="#" target="_blank" rel="noopener">Términos y Condiciones</a> y el
+              <a href="#" target="_blank" rel="noopener">Aviso de Privacidad</a>.
+            </span>
+          </label>
+        </div>
+        <div class="co-col">
+          <h4>Resumen del pedido</h4>
+          <div class="co-summary" id="coSummary"></div>
+          <div class="co-item" id="coShipRow" hidden>
+            <span>Envío</span><span id="coShipVal"></span>
+          </div>
+          <div class="co-total"><span>Total</span><strong id="coTotal"></strong></div>
+        </div>
+      </div>
+      <div class="co-ftr">
+        <button class="co-btn ghost" id="coCancel" type="button">Cancelar</button>
+        <button class="co-btn primary" id="coSubmit" type="button">Confirmar y continuar a WhatsApp</button>
+      </div>
+    </div>
+  </div>
+</template>
+
+<!-- ===================== FOOTER ===================== -->
 <footer class="footer" role="contentinfo" id="contacto">
   <p>¿Dudas? Escríbenos: <a class="accent" href="https://wa.me/528443288521" target="_blank" rel="noopener">+52 844 328 852 1</a></p>
   <small>&copy; <span id="year">2025</span> Librería Vida — Todos los derechos reservados.</small>
 </footer>
 
-<!-- Papel picado opcional (si quieres usarlo en secciones) -->
+<!-- ===================== PAPEL PICADO (opcional) ===================== -->
 <svg xmlns="http://www.w3.org/2000/svg" style="display:none">
   <symbol id="ppVida" viewBox="0 0 260 180">
     <defs>
@@ -240,25 +427,704 @@
         <circle cx="43"  cy="176" r="40" fill="#000"/>
         <circle cx="130" cy="176" r="40" fill="#000"/>
         <circle cx="217" cy="176" r="40" fill="#000"/>
-        <g fill="#000">
-          <g transform="translate(18,14)"><circle r="3"/><circle cx="18" r="3"/><circle cx="36" r="3"/><circle cx="54" r="3"/><circle cx="72" r="3"/><circle cx="90" r="3"/><circle cx="108" r="3"/><circle cx="126" r="3"/><circle cx="144" r="3"/><circle cx="162" r="3"/><circle cx="180" r="3"/></g>
-          <g transform="translate(10,34)"><circle r="3"/><circle cy="18" r="3"/><circle cy="36" r="3"/><circle cy="54" r="3"/><circle cy="72" r="3"/><circle cy="90" r="3"/><circle cy="108" r="3"/></g>
-          <g transform="translate(250,34)"><circle r="3"/><circle cy="18" r="3"/><circle cy="36" r="3"/><circle cy="54" r="3"/><circle cy="72" r="3"/><circle cy="90" r="3"/><circle cy="108" r="3"/></g>
-        </g>
-        <text x="130" y="88" font-family="Inter" font-weight="900" font-size="46" letter-spacing="2" text-anchor="middle" fill="#000">VIDA</text>
       </mask>
     </defs>
-    <rect x="6" y="10" width="248" height="150" rx="14" ry="14" fill="var(--fg,#059669)" mask="url(#ppVidaCut)"/>
+    <rect x="6" y="10" width="248" height="150" rx="14" ry="14" fill="var(--fg,#1d4ed8)" mask="url(#ppVidaCut)"/>
     <path d="M0,10 H260" stroke="#e5e7eb" stroke-width="1" opacity=".7"/>
   </symbol>
 </svg>
 
-<!-- SDK Mercado Pago (si lo usas) -->
-<script src="https://sdk.mercadopago.com/js/v2"></script>
-<!-- App -->
+<!-- ===================== JSON-LD (BookStore + WebSite) ===================== -->
+<script type="application/ld+json">
+{
+  "@context":"https://schema.org",
+  "@graph":[
+    {
+      "@type":"BookStore",
+      "name":"Librería Vida",
+      "url":"https://libreriavida.mx/",
+      "image":"https://libreriavida.mx/IMAGENES/LOGO-VIDA.png",
+      "telephone":"+528443288521",
+      "address":{"@type":"PostalAddress","addressCountry":"MX"}
+    },
+    {
+      "@type":"WebSite",
+      "name":"Librería Vida",
+      "url":"https://libreriavida.mx/",
+      "potentialAction":{
+        "@type":"SearchAction",
+        "target":"https://libreriavida.mx/?q={search_term_string}",
+        "query-input":"required name=search_term_string"
+      }
+    }
+  ]
+}
+</script>
+
+<!-- ============ ASESOR VIDA (PRO) ============ -->
+<!-- Botón flotante (puedes moverlo donde quieras) -->
+<button id="vida-advisor-btn" class="va-btn" aria-haspopup="dialog" aria-controls="vida-advisor-modal" aria-label="Abrir asesor">
+  🧠 Asesor Vida
+</button>
+
+<!-- Modal -->
+<div id="vida-advisor-modal" class="va-modal" aria-hidden="true" role="dialog" aria-labelledby="va-title">
+  <div class="va-backdrop" data-va-close></div>
+
+  <div class="va-dialog" role="document">
+    <header class="va-head">
+      <h3 id="va-title">Encuentra tu producto ideal</h3>
+      <button class="va-x" type="button" aria-label="Cerrar" data-va-close>×</button>
+    </header>
+
+    <form id="vida-quiz" class="va-form">
+      <!-- Tipo -->
+      <div class="va-field">
+        <label class="va-label">¿Qué buscas? <span class="va-req">*</span></label>
+        <select name="tipo" required aria-required="true">
+          <option value="">Selecciona…</option>
+          <option value="biblia">Biblia</option>
+          <option value="libro">Libro</option>
+          <option value="regalo">Regalo</option>
+        </select>
+      </div>
+
+      <!-- ==== Sección Biblias ==== -->
+      <fieldset class="va-section" data-section="biblia" hidden>
+        <legend class="va-legend">Preferencias para Biblia</legend>
+
+        <div class="va-grid">
+          <div class="va-field">
+            <label class="va-label">¿Para qué la quieres?</label>
+            <select name="proposito">
+              <option value="">—</option>
+              <option value="lectura">Lectura diaria</option>
+              <option value="estudio">Estudio profundo</option>
+              <option value="regalo">Regalo</option>
+              <option value="iglesia">Uso en iglesia</option>
+            </select>
+          </div>
+
+          <div class="va-field">
+            <label class="va-label">Traducción preferida</label>
+            <select name="traduccion">
+              <option value="">Cualquiera</option>
+              <option value="RVR1960">RVR1960</option>
+              <option value="NTV">NTV</option>
+              <option value="NVI">NVI</option>
+              <option value="TLA">TLA</option>
+            </select>
+          </div>
+
+          <div class="va-field">
+            <label class="va-label">Tamaño</label>
+            <select name="tamano">
+              <option value="">Me da igual</option>
+              <option value="compacta">Compacta / Portátil</option>
+              <option value="mediana">Mediana</option>
+              <option value="grande">Grande</option>
+            </select>
+          </div>
+
+          <div class="va-field">
+            <label class="va-label">Letra</label>
+            <select name="letra">
+              <option value="">Normal</option>
+              <option value="grande">Grande</option>
+              <option value="gigante">Gigante</option>
+            </select>
+          </div>
+
+          <div class="va-field">
+            <label class="va-label">Presupuesto (MXN)</label>
+            <select name="precioBiblia">
+              <option value="">Cualquiera</option>
+              <option value="economica">Hasta 400</option>
+              <option value="media">401–900</option>
+              <option value="premium">901+</option>
+            </select>
+          </div>
+
+          <div class="va-field">
+            <label class="va-label">¿Qué valoras más?</label>
+            <select name="plus">
+              <option value="">—</option>
+              <option value="bonita">Diseño bonito / regalo</option>
+              <option value="estudio">Notas de estudio / mapas</option>
+              <option value="durable">Tapa resistente / uso rudo</option>
+              <option value="ligera">Que sea ligera</option>
+            </select>
+          </div>
+
+        </div>
+      </fieldset>
+
+      <!-- ==== Sección Libros ==== -->
+      <fieldset class="va-section" data-section="libro" hidden>
+        <legend class="va-legend">Preferencias para Libro</legend>
+
+        <div class="va-grid">
+          <div class="va-field">
+            <label class="va-label">Género</label>
+            <select name="genero">
+              <option value="">—</option>
+              <option value="novela">Novela cristiana</option>
+              <option value="devocional">Devocional</option>
+              <option value="estudio">Estudio bíblico</option>
+              <option value="biografia">Biografía/Testimonio</option>
+              <option value="apologetica">Apologética</option>
+            </select>
+          </div>
+
+          <div class="va-field">
+            <label class="va-label">Autor</label>
+            <input type="text" name="autor" placeholder="Ej. Francine Rivers" inputmode="text" />
+          </div>
+
+          <div class="va-field">
+            <label class="va-label">Presupuesto (MXN)</label>
+            <select name="precioLibro">
+              <option value="">Cualquiera</option>
+              <option value="economico">Hasta 300</option>
+              <option value="medio">301–700</option>
+              <option value="premium">701+</option>
+            </select>
+          </div>
+        </div>
+      </fieldset>
+
+      <!-- ==== Sección Regalos ==== -->
+      <fieldset class="va-section" data-section="regalo" hidden>
+        <legend class="va-legend">Preferencias para Regalo</legend>
+
+        <div class="va-grid">
+          <div class="va-field">
+            <label class="va-label">¿Para quién?</label>
+            <select name="destinatario">
+              <option value="">—</option>
+              <option value="mujer">Mujer</option>
+              <option value="hombre">Hombre</option>
+              <option value="nino">Niño</option>
+              <option value="joven">Joven</option>
+              <option value="pastor">Pastor/Líder</option>
+            </select>
+          </div>
+
+          <div class="va-field">
+            <label class="va-label">Ocasión</label>
+            <select name="ocasion">
+              <option value="">—</option>
+              <option value="cumple">Cumpleaños</option>
+              <option value="aniversario">Aniversario</option>
+              <option value="navidad">Navidad</option>
+              <option value="consolacion">Consuelo/Ánimo</option>
+              <option value="agradecimiento">Agradecimiento</option>
+            </select>
+          </div>
+
+          <div class="va-field">
+            <label class="va-label">Presupuesto (MXN)</label>
+            <select name="precioRegalo">
+              <option value="">Cualquiera</option>
+              <option value="economico">Hasta 300</option>
+              <option value="medio">301–700</option>
+              <option value="premium">701+</option>
+            </select>
+          </div>
+        </div>
+      </fieldset>
+
+      <footer class="va-actions">
+        <button type="button" class="va-btn-ghost" id="va-reset">Limpiar</button>
+        <button type="submit" class="va-btn-primary">Ver recomendaciones</button>
+      </footer>
+    </form>
+
+    <section id="vida-results" class="va-results" hidden aria-live="polite">
+      <div class="va-results-head">
+        <h4>Recomendaciones</h4>
+        <div class="va-tip" id="va-tip"></div>
+      </div>
+      <ol id="vida-list" class="va-list"></ol>
+    </section>
+  </div>
+</div>
+
+<style>
+/* ===== Scoped UI del Asesor (no pisa tu CSS) ===== */
+:root{
+  --va-ink:#0f172a; --va-soft:#475569; --va-border:#e5e7eb;
+  --va-main:#1d4ed8; --va-main2:#1e3a8a; --va-warn:#f59e0b; --va-bg:#fff;
+  --va-shadow:0 18px 60px rgba(2,6,23,.18);
+  --va-radius:14px; --va-ease:cubic-bezier(.2,.8,.2,1);
+}
+
+/* Botón flotante */
+.va-btn{
+  position:fixed; right:16px; bottom:18px; z-index:60;
+  border:0; border-radius:999px; padding:.8rem 1rem;
+  background:linear-gradient(180deg,var(--va-main),var(--va-main2)); color:#fff; font-weight:900;
+  box-shadow:0 10px 24px rgba(2,6,23,.25);
+}
+.va-btn:focus-visible{ outline:3px solid rgba(29,78,216,.35); outline-offset:3px; }
+
+/* Modal */
+.va-modal[aria-hidden="true"]{ display:none; }
+.va-modal{
+  position:fixed; inset:0; z-index:9999; display:grid; place-items:center;
+}
+.va-backdrop{
+  position:absolute; inset:0; background:rgba(0,0,0,.45); backdrop-filter:blur(2px);
+}
+.va-dialog{
+  position:relative; z-index:1; width:min(100%, 980px); max-height:90vh; overflow:auto;
+  background:var(--va-bg); color:var(--va-ink); border:1px solid var(--va-border);
+  border-radius:var(--va-radius); box-shadow:var(--va-shadow); padding:14px;
+}
+
+/* Header */
+.va-head{ display:flex; align-items:center; justify-content:space-between; gap:8px; padding-bottom:6px; border-bottom:1px solid var(--va-border); }
+.va-head h3{ margin:0; font-size:1.2rem; }
+.va-x{
+  width:40px; height:40px; border-radius:999px; border:1px solid var(--va-border); background:#fff;
+  font-size:22px; cursor:pointer;
+}
+
+/* Form */
+.va-form{ display:grid; gap:12px; padding-block:8px; }
+.va-grid{ display:grid; gap:10px; grid-template-columns: repeat(2,minmax(0,1fr)); }
+@media (max-width:720px){ .va-grid{ grid-template-columns:1fr; } }
+
+.va-label{ font-weight:800; color:#0b1f3b; }
+.va-req{ color:#ef4444; }
+.va-field select, .va-field input{
+  width:100%; padding:.65rem .75rem; border-radius:10px; border:1px solid var(--va-border);
+}
+.va-legend{ font-weight:800; color:#102a56; padding:.3rem 0; }
+
+/* Actions */
+.va-actions{ display:flex; justify-content:flex-end; gap:8px; border-top:1px solid var(--va-border); padding-top:10px; }
+.va-btn-ghost{
+  border:1px solid var(--va-border); background:#fff; color:#334155; border-radius:10px; padding:.6rem .9rem; font-weight:800;
+}
+.va-btn-primary{
+  border:0; border-radius:10px; padding:.7rem 1rem; font-weight:900; color:#fff;
+  background:linear-gradient(180deg,var(--va-main),var(--va-main2));
+  box-shadow:0 10px 24px rgba(13,40,110,.22);
+}
+
+/* Results */
+.va-results{ margin-top:8px; }
+.va-results-head{ display:flex; align-items:center; justify-content:space-between; gap:8px; }
+.va-results h4{ margin:.2rem 0 .6rem; }
+.va-tip{ color:var(--va-soft); font-size:.92rem; }
+
+.va-list{ list-style: none; padding:0; margin:0; display:grid; gap:10px; }
+.va-card{
+  display:grid; grid-template-columns: 90px 1fr auto; gap:10px; align-items:center;
+  border:1px solid var(--va-border); border-radius:12px; padding:10px; background:#fff;
+  box-shadow:0 10px 24px rgba(0,0,0,.06);
+}
+@media (max-width:640px){
+  .va-card{ grid-template-columns: 70px 1fr; }
+  .va-card .va-cta{ grid-column: 1 / -1; justify-content:flex-end; }
+}
+
+.va-thumb{ width:90px; height:90px; object-fit:cover; border-radius:10px; background:#f8fafc; border:1px solid var(--va-border); }
+.va-title{ font-weight:900; margin:0; }
+.va-meta{ color:var(--va-soft); font-size:.92rem; margin:.15rem 0 .4rem; }
+.va-tags{ display:flex; gap:6px; flex-wrap:wrap; }
+.va-tag{ font-size:.75rem; padding:.15rem .45rem; border-radius:999px; background:#eef2ff; color:#1e3a8a; border:1px solid #dbeafe; }
+.va-price{ font-weight:900; }
+.va-score{ font-weight:900; color:#065f46; background:#ecfdf5; border:1px solid #a7f3d0; border-radius:999px; padding:.15rem .45rem; font-size:.75rem; }
+
+.va-cta{ display:flex; gap:8px; align-items:center; }
+.va-cta .va-link{ border:1px dashed var(--va-border); border-radius:10px; padding:.5rem .8rem; font-weight:800; background:#fff; }
+.va-cta .va-buy{ border:0; border-radius:10px; padding:.6rem .9rem; font-weight:900; color:#fff; background:linear-gradient(180deg,#16a34a,#15803d); }
+</style>
+
+<script>
+(()=>{
+
+/* ============ Helpers de UI ============ */
+const $ = (sel,root=document)=>root.querySelector(sel);
+const $$ = (sel,root=document)=>Array.from(root.querySelectorAll(sel));
+
+const modal     = $('#vida-advisor-modal');
+const btnOpen   = $('#vida-advisor-btn');
+const form      = $('#vida-quiz');
+const results   = $('#vida-results');
+const list      = $('#vida-list');
+const tip       = $('#va-tip');
+
+let CATALOG = null;     // cache de index.json
+let LAST    = {};       // respuestas previas
+
+/* ============ Apertura / Cierre ============ */
+function openModal(){
+  modal.setAttribute('aria-hidden','false');
+  document.body.style.overflow = 'hidden';
+  // restaurar últimas respuestas
+  try{
+    const saved = JSON.parse(localStorage.getItem('va:last')||'{}');
+    if(Object.keys(saved).length){ fillForm(saved); }
+  }catch{}
+  form.tipo.dispatchEvent(new Event('change',{bubbles:true}));
+  // foco
+  setTimeout(()=>{ form.tipo.focus(); }, 60);
+}
+function closeModal(){
+  modal.setAttribute('aria-hidden','true');
+  document.body.style.overflow = '';
+}
+modal.addEventListener('click', e=>{
+  if(e.target.hasAttribute('data-va-close')) closeModal();
+});
+document.addEventListener('keydown', e=>{
+  if(modal.getAttribute('aria-hidden')==='false' && e.key==='Escape') closeModal();
+});
+btnOpen?.addEventListener('click', openModal);
+$$('[data-va-close]', modal).forEach(b=>b.addEventListener('click', closeModal));
+
+/* ============ Mostrar/Ocultar secciones por tipo ============ */
+form.addEventListener('change', e=>{
+  if(e.target.name === 'tipo'){
+    const tipo = form.tipo.value;
+    $$('[data-section]').forEach(sec=>{
+      sec.hidden = (sec.dataset.section !== tipo);
+    });
+  }
+});
+
+/* ============ Reset ============ */
+$('#va-reset').addEventListener('click', ()=>{
+  form.reset();
+  localStorage.removeItem('va:last');
+  $$('[data-section]').forEach(sec=>sec.hidden = true);
+  results.hidden = true;
+  list.innerHTML = '';
+});
+
+/* ============ Submit ============ */
+form.addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  const data = Object.fromEntries(new FormData(form).entries());
+  LAST = data;
+  localStorage.setItem('va:last', JSON.stringify(data));
+
+  // carga catálogo
+  if(!CATALOG){
+    try{
+      CATALOG = await fetch('/index.json',{cache:'no-store'}).then(r=>r.json());
+    }catch(err){
+      console.error('No se pudo cargar index.json', err);
+      list.innerHTML = '<li>⚠️ No se pudo cargar el catálogo. Revisa /index.json</li>';
+      results.hidden = false;
+      return;
+    }
+  }
+
+  // ranking
+  const ranked = rankProducts(CATALOG, data).slice(0,10);
+  renderResults(ranked, data);
+});
+
+/* ============ Ranking (motor híbrido reglas + texto) ============ */
+function norm(v){ return (v??'').toString().toLowerCase(); }
+
+function buckPrice(mx){
+  if(mx==null || isNaN(mx)) return '';
+  if(mx<=300) return 'economico';
+  if(mx<=700) return 'medio';
+  return 'premium';
+}
+
+function rankProducts(items, q){
+  const tipo = q.tipo;
+
+  // Palabras claves derivadas
+  const keywords = new Set();
+  function add(...arr){ arr.filter(Boolean).forEach(s=>keywords.add(norm(s))); }
+
+  if(tipo==='biblia'){
+    add(q.proposito, q.traduccion, q.tamano, q.letra, q.plus);
+    add(q.precioBiblia);
+  }
+  if(tipo==='libro'){
+    add(q.genero, q.autor);
+    add(q.precioLibro);
+  }
+  if(tipo==='regalo'){
+    add(q.destinatario, q.ocasion);
+    add(q.precioRegalo);
+  }
+
+  // pesos por match (afinados a comercio)
+  const W = {
+    category: 6,
+    version:  5,
+    tags:     3.5,
+    author:   4,
+    text:     2.5,
+    price:    2.5,
+    bonus:    2,   // propósito/plus especiales
+  };
+
+  const desiredPrice = (
+    tipo==='biblia' ? q.precioBiblia :
+    tipo==='libro'  ? q.precioLibro  : q.precioRegalo
+  ) || '';
+
+  const desiredVersion = norm(q.traduccion||'');
+  const desiredAuthor  = norm(q.autor||'');
+  const desiredGenero  = norm(q.genero||'');
+
+  // mapeos propósito/plus -> tags
+  const purposeTags = {
+    lectura:['compacta','ligera','portatil'],
+    estudio:['estudio','comentarios','mapas','referencias'],
+    regalo:['bonita','edicion-especial','presentacion'],
+    iglesia:['pulpito','letra-grande','revestimiento']
+  };
+  const plusTags = {
+    bonita:['bonita','edicion-especial','premium'],
+    estudio:['estudio','comentarios','mapas'],
+    durable:['tapa-dura','zipper','resistente'],
+    ligera:['ligera','compacta','bolsillo']
+  };
+
+  return items
+    .map(p=>{
+      const title = norm(p.title);
+      const text  = norm(`${p.title} ${p.description||''} ${(p.tags||[]).join(' ')} ${p.author||''} ${p.version||''} ${p.category||''}`);
+      const priceBucket = buckPrice(p.price);
+
+      let score = 0;
+      const reasons = [];
+
+      // 1) categoría
+      if(tipo==='biblia' && norm(p.category)==='biblias'){ score+=W.category; reasons.push('categoría: biblias'); }
+      if(tipo==='libro'  && norm(p.category)==='libros'){  score+=W.category; reasons.push('categoría: libros'); }
+      if(tipo==='regalo' && norm(p.category)==='regalos'){ score+=W.category; reasons.push('categoría: regalos'); }
+
+      // 2) versión/traducción
+      if(tipo==='biblia' && desiredVersion && norm(p.version)===desiredVersion){
+        score+=W.version; reasons.push(`traducción: ${p.version}`);
+      }
+
+      // 3) autor/género (libros)
+      if(tipo==='libro'){
+        if(desiredAuthor && norm(p.author||'').includes(desiredAuthor)){ score+=W.author+2; reasons.push(`autor: ${p.author}`); }
+        if(desiredGenero && (p.tags||[]).some(t=>norm(t).includes(desiredGenero))){ score+=W.tags; reasons.push(`género: ${desiredGenero}`); }
+      }
+
+      // 4) precio
+      if(desiredPrice && desiredPrice===priceBucket){
+        score+=W.price; reasons.push(`presupuesto: ${desiredPrice}`);
+      }
+
+      // 5) propósito/plus -> tags
+      if(tipo==='biblia'){
+        const pt = (purposeTags[q.proposito]||[]);
+        const pl = (plusTags[q.plus]||[]);
+        const want = new Set([...pt,...pl].map(norm));
+        if(want.size){
+          const hits = (p.tags||[]).map(norm).filter(t=>want.has(t)).length;
+          if(hits){ score += W.bonus + (hits*1.2); reasons.push('características preferidas'); }
+        }
+        // letra y tamaño como tags frecuentes
+        if(q.letra && (p.tags||[]).map(norm).includes(norm(q.letra))){ score+=2; reasons.push(`letra ${q.letra}`); }
+        if(q.tamano && (p.tags||[]).map(norm).includes(norm(q.tamano))){ score+=2; reasons.push(`tamaño ${q.tamano}`); }
+      }
+
+      // 6) coincidencias de texto difuso con keywords
+      let textHits = 0;
+      keywords.forEach(k=>{
+        if(k && text.includes(k)) textHits++;
+      });
+      if(textHits){ score += W.text + Math.min(textHits,3)*0.8; reasons.push('coincidencias de búsqueda'); }
+
+      // bonus leve si es oferta/precio tachado (si existiera)
+      if(p.compareAt && p.compareAt>p.price){ score+=1; reasons.push('en oferta'); }
+
+      // normaliza score a 0–100 aprox
+      const normScore = Math.max(0, Math.min(100, Math.round(score*6)));
+
+      return { product:p, score:normScore, reasons };
+    })
+    .filter(x=>x.score>0) // oculta irrelevantes
+    .sort((a,b)=> b.score - a.score);
+}
+
+/* ============ Render ============ */
+function renderResults(items, q){
+  results.hidden = false;
+  if(!items.length){
+    tip.textContent = 'No encontré coincidencias exactas. Prueba con menos filtros.';
+    list.innerHTML = '<li class="va-meta">Sin resultados. Ajusta las preferencias o escribe un autor distinto.</li>';
+    return;
+  }
+
+  tip.textContent = `Mostrando ${Math.min(items.length,10)} resultado(s) — ordenado por relevancia`;
+
+  list.innerHTML = items.map(({product,score})=>{
+    const img = product.image || '/IMAGENES/placeholder.png';
+    const url = product.url   || '#';
+    const price = (product.price!=null) ? `$${Number(product.price).toLocaleString('es-MX')}` : '—';
+    const tags = (product.tags||[]).slice(0,5).map(t=>`<span class="va-tag">${t}</span>`).join(' ');
+    const version = product.version ? ` · ${product.version}`:'';
+    const author  = product.author ? ` · ${product.author}`:'';
+
+    // link de WhatsApp con prefill
+    const wa = new URL('https://wa.me/528443288521');
+    const msg = `Hola, me interesa ${product.title} (ID: ${product.id||'-'}). ¿Disponible?`;
+    wa.searchParams.set('text', msg);
+
+    return `
+      <li class="va-card">
+        <img class="va-thumb" src="${img}" alt="${product.title}">
+        <div>
+          <h5 class="va-title">${product.title}</h5>
+          <div class="va-meta">${norm(product.category)}${version}${author}</div>
+          <div class="va-tags">${tags}</div>
+        </div>
+        <div class="va-cta">
+          <div>
+            <div class="va-price">${price}</div>
+            <div class="va-score" title="Relevancia">Match ${score}%</div>
+          </div>
+          <a class="va-link" href="${url}">Ver</a>
+          <a class="va-buy" href="${wa.toString()}" target="_blank" rel="noopener">WhatsApp</a>
+        </div>
+      </li>
+    `;
+  }).join('');
+}
+
+/* ============ Rellenar form desde localStorage ============ */
+function fillForm(obj){
+  Object.entries(obj).forEach(([k,v])=>{
+    const el = form.elements[k];
+    if(!el) return;
+    if(el.tagName==='SELECT' || el.tagName==='INPUT' || el.tagName==='TEXTAREA'){
+      el.value = v;
+    }
+  });
+}
+
+/* ============ Mejora: abrir asesor con query pre-cargada (opcional) ============
+   Si llamas openAdvisor({tipo:'libro', autor:'Francine Rivers'})
+   desde cualquier parte de tu sitio. */
+window.openAdvisor = (pref={})=>{
+  openModal();
+  setTimeout(()=>{
+    Object.entries(pref).forEach(([k,v])=>{
+      if(form.elements[k]) form.elements[k].value = v;
+    });
+    form.tipo.dispatchEvent(new Event('change',{bubbles:true}));
+  },0);
+};
+
+})();
+</script>
+
+
+<!-- ===================== SDK MERCADO PAGO (opcional) ===================== -->
+<script src="https://sdk.mercadopago.com/js/v2" defer></script>
+
+<!-- ===================== JS PROPIO ===================== -->
 <script src="java.js" defer></script>
+<!-- Si aún no subes el asesor IA, deja comentado: -->
+<script src="vida-advisor.js" defer></script>
+
+<!-- ===================== JS EMBEBIDO: slider + menú + asesor ===================== -->
+<script>
+/* ===== Menú móvil simple ===== */
+(function(){
+  const btn = document.querySelector('.menu-toggle');
+  const nav = document.getElementById('nav');
+  const backdrop = document.querySelector('.nav-backdrop');
+  if(!btn || !nav || !backdrop) return;
+  function close(){ nav.classList.remove('open'); backdrop.hidden = true; btn.setAttribute('aria-expanded','false'); }
+  btn.addEventListener('click', () => {
+    const open = nav.classList.toggle('open');
+    backdrop.hidden = !open;
+    btn.setAttribute('aria-expanded', String(open));
+  });
+  backdrop.addEventListener('click', close);
+  window.addEventListener('resize', () => { if (window.innerWidth > 860) close(); });
+})();
+
+/* ===== Slider hero robusto ===== */
+(function(){
+  const wrap = document.getElementById('slides');
+  if(!wrap) return;
+  const prev = document.querySelector('.slider-btn.prev');
+  const next = document.querySelector('.slider-btn.next');
+  const dotsWrap = document.getElementById('dots');
+  const slides = Array.from(wrap.children).filter(el => el.classList.contains('slide'));
+  let i = 0;
+
+  if (dotsWrap) dotsWrap.innerHTML = slides.map((_, idx) =>
+    `<button type="button" aria-label="Ir al slide ${idx+1}"></button>`
+  ).join('');
+  const dots = dotsWrap ? Array.from(dotsWrap.querySelectorAll('button')) : [];
+
+  function go(idx){
+    i = (idx + slides.length) % slides.length;
+    wrap.style.transform = `translateX(-${i*100}%)`;
+    dots.forEach((d, n) => d.classList.toggle('active', n === i));
+  }
+  prev && prev.addEventListener('click', () => go(i-1));
+  next && next.addEventListener('click', () => go(i+1));
+  dots.forEach((d, n) => d.addEventListener('click', () => go(n)));
+
+  let timer = setInterval(() => { if(!document.hidden) go(i+1); }, 6000);
+  document.addEventListener('visibilitychange', () => {
+    clearInterval(timer);
+    timer = setInterval(() => { if(!document.hidden) go(i+1); }, 6000);
+  });
+  go(0);
+})();
+
+/* ===== Asesor IA (UI básica) ===== */
+(function(){
+  const btn = document.getElementById('vida-advisor-btn');
+  const modal = document.getElementById('vida-advisor-modal');
+  const close = modal?.querySelector('.vam-close');
+  const form = document.getElementById('vida-quiz');
+  const list = document.getElementById('vida-list');
+  const results = document.getElementById('vida-results');
+  if(!btn || !modal || !close || !form || !list || !results) return;
+
+  const open = () => { modal.classList.add('open'); modal.setAttribute('aria-hidden','false'); }
+  const hide = () => { modal.classList.remove('open'); modal.setAttribute('aria-hidden','true'); }
+
+  btn.addEventListener('click', open);
+  close.addEventListener('click', hide);
+  modal.querySelector('.vam-backdrop').addEventListener('click', hide);
+  document.addEventListener('keydown', e => { if(e.key === 'Escape') hide(); });
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const data = Object.fromEntries(new FormData(form));
+    // Reglas sencillas (puedes mejorarlas en vida-advisor.js con IA real)
+    const picks = [];
+    if (data.proposito === 'estudio') picks.push('Biblia de Estudio (RVR1960/NVI) con mapas y notas.');
+    if (data.letra === 'gigante') picks.push('Letra Gigante RV60 tapa dura.');
+    if (data.precio === 'economica') picks.push('Biblia económica tapa rústica, ideal para llevar a grupos.');
+    if (!picks.length) picks.push('Biblia RV60 chequera con zipper (compacta y bonita).');
+
+    list.innerHTML = picks.map(p => `<li>${p}</li>`).join('');
+    results.hidden = false;
+  });
+
+  document.getElementById('vida-reset')?.addEventListener('click', () => {
+    form.reset();
+    results.hidden = true;
+    list.innerHTML = '';
+  });
+})();
+</script>
 </body>
 </html>
-
-
-
