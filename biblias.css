@@ -949,3 +949,523 @@ img, svg { max-width: 100%; height: auto; display: block; }
 }
 .sw:active{ transform: scale(.96); }
 .sw.active{ outline: 3px solid #facc15; outline-offset: 2px; }
+/* ===========================
+   VIDA — Minimal Azul (Overrides)
+   Pega este bloque al final
+   =========================== */
+
+/* Paleta sobria en azules */
+:root{
+  --ink:#0f172a;             /* texto principal */
+  --muted:#5b6b82;           /* texto secundario */
+  --bg:#f7f9fc;              /* fondo app */
+  --card:#ffffff;            /* tarjetas/superficies */
+  --soft:#f1f5fb;            /* superficies suaves */
+  --border:#e6ecf4;          /* bordes sutiles */
+  --accent:#2563eb;          /* azul principal (confianza) */
+  --accent-2:#1e40af;        /* azul profundo (hover/foco) */
+  --radius:14px;
+  --shadow:0 16px 40px rgba(2, 12, 32, .08);
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --ink:#e6edf7;
+    --muted:#9fb0c7;
+    --bg:#0b1220;
+    --card:#0e1626;
+    --soft:#0b1422;
+    --border:#1a2740;
+    --accent:#3b82f6;
+    --accent-2:#1d4ed8;
+    --shadow:0 28px 70px rgba(0,0,0,.45);
+  }
+}
+body{ color:var(--ink); background:var(--bg); }
+
+/* ===== Header limpio: sin tricolor, subrayado azul sutil ===== */
+.header{
+  background:var(--card);
+  border-bottom:1px solid var(--border);
+  box-shadow: 0 6px 18px rgba(2,12,32,.04);
+}
+.header::after{
+  content:"";
+  display:block; height:3px;
+  background:linear-gradient(90deg,var(--accent), var(--accent-2));
+}
+
+/* Marca y navegación */
+.nav a{ font-weight:700; }
+.nav a.active,.nav a:hover{
+  background: rgba(37,99,235,.10);
+  color: var(--accent-2);
+}
+
+/* ===== Buscador más “trusty” ===== */
+.header-search input{
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:.75rem;
+}
+.header-search input:focus{
+  border-color: color-mix(in oklab, var(--accent) 45%, #fff);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--accent) 25%, transparent);
+}
+
+/* ===== Botones ===== */
+.btn{
+  border-radius:.7rem;
+  font-weight:800;
+  transition: transform .04s ease, filter .15s ease, box-shadow .15s ease;
+}
+.btn.primary{
+  background: linear-gradient(180deg,var(--accent),var(--accent-2));
+  color:#fff; border:0;
+  box-shadow: 0 10px 24px rgba(37,99,235,.25);
+}
+.btn.primary:hover{ filter:brightness(1.03); }
+.btn.secondary{
+  background:#fff; color:var(--accent); border-color:var(--accent);
+}
+.btn.ghost{
+  background:#fff; border:1px solid var(--border);
+  color:var(--ink);
+}
+.btn.danger{ background:#ef4444; color:#fff; border:0; }
+.btn.flag{
+  background: linear-gradient(90deg,var(--accent),var(--accent-2));
+  color:#fff; border:0;
+}
+
+/* ===== Tarjetas de producto ===== */
+.card-product{
+  background:var(--card); border:1px solid var(--border);
+  border-radius:var(--radius); box-shadow: var(--shadow);
+}
+.card-product:hover{
+  transform: translateY(-2px);
+  box-shadow: 0 18px 50px rgba(2,12,32,.12);
+}
+.card-media{ background:#0b1220; }
+.card-media img{ aspect-ratio:4/5; object-fit:cover; }
+.badge{
+  background: var(--accent-2);
+  color:#fff; border-radius:.6rem; font-weight:800;
+}
+.badge.price{
+  left:10px; right:auto; bottom:10px; top:auto;
+  background:linear-gradient(180deg,var(--accent),var(--accent-2));
+  box-shadow:0 8px 18px rgba(37,99,235,.25);
+}
+.info h3{ font-size:1.02rem; }
+.meta{ color:var(--muted); }
+
+/* Swatches contorno suave */
+.color-inline .sw,
+.sw{
+  border:2px solid #fff; outline:1px solid var(--border);
+}
+.sw:hover{ transform:scale(1.05); }
+.sw[data-selected="true"],
+.fs-swatches .sw[aria-checked="true"]{
+  outline-color: var(--accent-2);
+  box-shadow: inset 0 0 0 2px color-mix(in oklab, var(--accent) 30%, transparent);
+}
+
+/* ===== Grid & estados ===== */
+.grid{ gap:14px; }
+#emptyState{
+  color:var(--muted);
+  background:var(--soft);
+  border:1px dashed var(--border);
+  padding:1rem; border-radius:12px; text-align:center;
+}
+
+/* ===== Mini-cart (drawer azul claro) ===== */
+.mini-cart__panel{
+  background:var(--card); color:var(--ink);
+  border:1px solid var(--border);
+  box-shadow: var(--shadow);
+}
+.mini-cart__toggle{
+  background:#fff; border:1px solid var(--border);
+}
+.mini-cart .qty{
+  background:var(--accent); color:#fff;
+}
+
+/* ===== Modal de producto (claro, con acentos azules) ===== */
+.fs-backdrop{ background: rgba(2,12,32,.55); }
+.fs-modal{
+  background:var(--card); color:var(--ink);
+  border:1px solid var(--border);
+  box-shadow: var(--shadow);
+}
+.fs-left{ background:linear-gradient(180deg,#f8fbff,#f3f7ff); }
+.fs-stage{
+  background:#f6f9ff; border:1px solid var(--border);
+}
+.fs-arrow{
+  background:#ffffffcc; color:var(--ink);
+  border:1px solid var(--border);
+}
+.fs-close{
+  background:#fff; color:var(--ink);
+  border:1px solid var(--border);
+}
+.fs-title{ font-weight:900; }
+.fs-price .now{ color:var(--accent); }
+.fs-thumb{ background:#fff; border:2px solid transparent; }
+.fs-thumb[aria-current="true"]{ border-color:var(--accent); }
+.fs-swatches .sw{ border-color:var(--border); box-shadow:0 0 0 2px #fff; }
+
+/* Stock / oferta */
+.badge-oferta{ background:#ef4444; }
+.stock-dot{ background:#10b981; }
+.stock.low .stock-dot{ background:#f59e0b; }
+.stock.out .stock-dot{ background:#ef4444; }
+
+/* ===== Checkout modal con acentos azules (sin tricolor) ===== */
+.co-backdrop{ background: rgba(2,12,32,.58); }
+.co-modal{
+  background:var(--card); color:var(--ink);
+  border:1px solid var(--border); box-shadow: var(--shadow);
+}
+.co-flag{
+  height:6px;
+  background: linear-gradient(90deg,var(--accent),var(--accent-2));
+}
+.co-hdr{ border-bottom:1px solid var(--border); }
+.co-col{
+  background:linear-gradient(180deg,#fbfdff,#f8fbff);
+  border:1px solid var(--border);
+}
+.co-input,.co-textarea{
+  background:#fff; border:1px solid var(--border); color:var(--ink);
+}
+.co-input:focus,.co-textarea:focus{
+  border-color: var(--accent);
+  box-shadow:0 0 0 2px color-mix(in oklab, var(--accent) 25%, transparent);
+}
+.co-btn.ghost{
+  background:#fff; border-color:var(--border); color:var(--ink);
+}
+.co-btn.primary{
+  background: linear-gradient(180deg,var(--accent),var(--accent-2));
+  color:#fff; border:0;
+  box-shadow:0 10px 24px rgba(37,99,235,.25);
+}
+
+/* ===== Hero / slider ===== */
+.hero{
+  border:1px solid var(--border);
+  background: linear-gradient(180deg,#fbfdff,#f5f9ff);
+  box-shadow: var(--shadow);
+}
+.slider-btn{
+  background:#ffffffcc; color:var(--ink);
+  border:1px solid var(--border);
+}
+.dots button{ background:#c7d5f5; }
+.dots button.active{ background:var(--accent); }
+
+/* ===== Toolbar / chips ===== */
+.toolbar{ color:var(--muted); }
+.chip{
+  background:#fff; border:1px solid var(--border);
+  color:var(--ink); padding:.45rem .7rem; border-radius:999px; font-weight:800;
+}
+.chip.active{ background:rgba(37,99,235,.10); border-color: var(--accent); color:var(--accent-2); }
+
+/* ===== Footer sobrio ===== */
+.footer{
+  color:var(--muted);
+  border-top:1px solid var(--border);
+  background: linear-gradient(180deg,#f9fbff,#f4f8ff);
+}
+.footer .accent{ color:var(--accent-2); font-weight:800; }
+
+/* ===== Accesibilidad visual ===== */
+:where(a,button):focus-visible{
+  outline:3px solid color-mix(in oklab, var(--accent) 35%, transparent);
+  outline-offset:3px; border-radius:8px;
+}
+
+/* ===== Pequeños ajustes responsivos ===== */
+@media (max-width:768px){
+  .badge.price{ left:8px; bottom:8px; }
+  .fs-stage{ border-radius:12px; }
+}
+
+
+/* =========================================================
+   VIDA CHATBOT — Neon Glass UI + botones premium
+   ========================================================= */
+:root{
+  --vcb-ink: var(--ink, #e6edf7);
+  --vcb-bg: var(--bg, #0b1220);
+  --vcb-card: var(--card, #0e1626);
+  --vcb-border: var(--border, #1a2740);
+  --vcb-accent: var(--accent, #15f5ba);
+  --vcb-accent-2: var(--accent-2, #5b8cff);
+  --vcb-accent-3: var(--accent-3, #ff7ad9);
+  --vcb-shadow: 0 30px 80px rgba(0,0,0,.45);
+  --vcb-glass: rgba(12,18,40,.72);
+  --vcb-blur: blur(16px) saturate(140%);
+  --vcb-radius: 16px;
+}
+
+/* FAB */
+.vcb-fab{
+  position: fixed; right: 16px; bottom: 16px; z-index: 12000;
+  display:inline-flex; align-items:center; gap:10px;
+  padding: 12px 16px; border-radius: 999px; border: 1px solid var(--vcb-accent-2);
+  background: linear-gradient(120deg, var(--vcb-accent-2), var(--vcb-accent));
+  color:#021222; font-weight:1000; cursor:pointer;
+  box-shadow: 0 0 24px color-mix(in oklab, var(--vcb-accent-2) 45%, transparent);
+  transition: filter .15s ease, transform .05s ease;
+}
+.vcb-fab:hover{ filter: brightness(1.06); }
+.vcb-fab:active{ transform: translateY(1px); }
+.vcb-fab .badge{
+  min-width:22px; height:22px; padding:0 6px; border-radius:999px;
+  background:#0b1220; color:#fff; display:inline-grid; place-items:center; font-size:12px;
+}
+
+/* Panel */
+.vcb-panel{
+  position: fixed; right: 16px; bottom: 76px; z-index: 12000;
+  width: min(420px, 96vw); height: min(72vh, 680px);
+  display: grid; grid-template-rows: auto 1fr auto;
+  border: 1px solid var(--vcb-border); border-radius: var(--vcb-radius);
+  background: var(--vcb-glass);
+  -webkit-backdrop-filter: var(--vcb-blur); backdrop-filter: var(--vcb-blur);
+  box-shadow: var(--vcb-shadow);
+  color: var(--vcb-ink);
+  transform: translateY(16px) scale(.98); opacity: 0; visibility: hidden;
+  transition: transform .25s ease, opacity .25s ease, visibility 0s linear .25s;
+}
+.vcb-panel.is-open{ transform: translateY(0) scale(1); opacity: 1; visibility: visible; transition: transform .25s ease, opacity .25s ease; }
+
+/* Header */
+.vcb-header{
+  display:flex; align-items:center; gap:10px; padding:10px 12px;
+  background: linear-gradient(180deg, #0f1835, #0c152d);
+  border-bottom: 1px solid var(--vcb-border);
+  border-radius: var(--vcb-radius) var(--vcb-radius) 0 0;
+}
+.vcb-avatar{
+  width:34px;height:34px;border-radius:12px;overflow:hidden;display:grid;place-items:center;
+  background: radial-gradient(#0ea5e9, #5b8cff);
+  box-shadow: 0 0 18px color-mix(in oklab, var(--vcb-accent-2) 30%, transparent);
+  font-weight:1000;color:#021222;
+}
+.vcb-title{ font-weight:1000; letter-spacing:.2px; }
+.vcb-sub{ font-size:.84rem; color:#9fb0c7; }
+.vcb-spacer{ flex:1 }
+.vcb-icon-btn{
+  border:1px solid var(--vcb-border); background:#0b1022; color:#dbeafe;
+  width:34px; height:34px; border-radius:10px; display:grid; place-items:center; cursor:pointer;
+}
+
+/* Mensajes */
+.vcb-messages{
+  padding:12px; overflow:auto; display:flex; flex-direction:column; gap:10px;
+  scrollbar-width: thin; scrollbar-color:#2a3758 transparent;
+}
+.vcb-msg{ display:grid; gap:6px; max-width:88%; }
+.vcb-msg .bubble{
+  padding:10px 12px; border-radius:14px; border:1px solid var(--vcb-border);
+  background: linear-gradient(180deg, #101935, #0c152d);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.06);
+}
+.vcb-msg.bot{ align-self:flex-start; }
+.vcb-msg.user{ align-self:flex-end; }
+.vcb-msg.user .bubble{
+  background: linear-gradient(120deg, var(--vcb-accent-2), var(--vcb-accent));
+  color:#021222; border-color: color-mix(in oklab, var(--vcb-accent-2) 50%, #fff);
+}
+.vcb-time{ font-size:.75rem; color:#93a2c7; }
+
+/* Typing */
+.vcb-typing{ display:inline-grid; grid-auto-flow:column; gap:4px; }
+.vcb-typing span{ width:6px;height:6px;border-radius:999px;background:#a8b6d6; opacity:.6; animation:blink 1.2s infinite ease-in-out }
+.vcb-typing span:nth-child(2){ animation-delay:.15s }
+.vcb-typing span:nth-child(3){ animation-delay:.3s }
+@keyframes blink{0%,100%{opacity:.2}50%{opacity:1}}
+
+/* Quick replies */
+.vcb-quick{
+  display:flex; gap:8px; flex-wrap:wrap; padding:8px 12px; border-top:1px solid var(--vcb-border);
+  background: linear-gradient(180deg, #0f1835, #0c152d);
+}
+.vcb-chip{
+  display:inline-flex; align-items:center; gap:.4rem; cursor:pointer;
+  padding:.5rem .75rem; border-radius:999px; font-weight:900; color:#dbeafe;
+  border:1px solid var(--vcb-border);
+  background: linear-gradient(180deg, #101935, #0c152d);
+  transition: transform .06s ease, box-shadow .15s ease;
+}
+.vcb-chip::before{ content:""; width:8px;height:8px;border-radius:999px; background: radial-gradient(var(--vcb-accent-2), var(--vcb-accent)); }
+.vcb-chip:hover{ transform: translateY(-1px); box-shadow: 0 10px 22px rgba(0,0,0,.3); }
+.vcb-chip.active{ background: linear-gradient(120deg, var(--vcb-accent-2), var(--vcb-accent)); color:#021222; border-color: var(--vcb-accent-2); }
+
+/* Composer */
+.vcb-composer{
+  display:grid; grid-template-columns: 1fr auto; gap:8px; padding:10px 12px; border-top:1px solid var(--vcb-border);
+  background: linear-gradient(180deg, #0f1835, #0c152d); border-radius:0 0 var(--vcb-radius) var(--vcb-radius);
+}
+.vcb-input{
+  min-height:44px; max-height:120px; resize:none;
+  background:#0b1022; border:1px solid #1b2742; border-radius:12px; color:#e5e7eb;
+  padding:10px 12px; box-shadow: inset 0 1px 0 rgba(255,255,255,.06);
+}
+.vcb-input:focus{ border-color: var(--vcb-accent-2); box-shadow: 0 0 0 3px color-mix(in oklab, var(--vcb-accent-2) 25%, transparent); }
+.vcb-send{
+  border:1px solid var(--vcb-accent-2);
+  background: linear-gradient(120deg, var(--vcb-accent-2), var(--vcb-accent));
+  color:#021222; font-weight:1000; border-radius:12px; padding:0 14px; cursor:pointer;
+}
+
+/* Botones premium (reutilizables dentro de mensajes) */
+.vcb-btn{
+  display:inline-flex; align-items:center; gap:.45rem; padding:.55rem .8rem; border-radius:12px; font-weight:1000; cursor:pointer;
+  border:1px solid var(--vcb-border); background: linear-gradient(180deg, #101935, #ffffff); color:#e5e7eb;
+}
+.vcb-btn.primary{ border-color: var(--vcb-accent-2); background: linear-gradient(120deg, var(--vcb-accent-2), var(--vcb-accent)); color:#021222; }
+.vcb-btn.ghost{ background:#0b1022; }
+.vcb-btn.danger{ border-color:#ff6b8a; background: linear-gradient(120deg,#ff7a7a,#ff3d6e); color:#fff; }
+
+/* Tarjeta de producto dentro del chat */
+.vcb-card{
+  border:1px solid var(--vcb-border); border-radius:14px; overflow:hidden;
+  background: linear-gradient(180deg, #0f1835, #ffffff);
+}
+.vcb-card .media{ position:relative; aspect-ratio: 4/3; background:#0b1022; }
+.vcb-card .media img{ width:100%; height:100%; object-fit:cover; }
+.vcb-card .body{ padding:10px; display:grid; gap:6px; }
+.vcb-card .title{ font-weight:900 }
+.vcb-card .meta{ color:#9fb0c7; font-size:.9rem }
+.vcb-card .row{ display:flex; gap:8px; flex-wrap:wrap }
+
+@media (max-width: 480px){
+  .vcb-panel{ right: 8px; left: 8px; width:auto; bottom: 76px; }
+  .vcb-fab{ right: 8px; bottom: 8px; }
+}
+/* =======================
+   FIX CHATBOT VIDA
+   ======================= */
+.vcb-panel {
+  width: min(420px, 94vw);
+  height: min(70vh, 620px);     /* altura máxima controlada */
+  max-height: 80vh;             /* nunca más del viewport */
+}
+
+.vcb-messages {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 12px;
+  scrollbar-width: thin;
+  scrollbar-color: #4b5563 transparent;
+}
+.vcb-messages::-webkit-scrollbar { width: 8px; }
+.vcb-messages::-webkit-scrollbar-thumb {
+  background: #4b5563;
+  border-radius: 8px;
+}
+
+/* Ajusta composer fijo abajo */
+.vcb-composer {
+  position: sticky;
+  bottom: 0;
+  background: linear-gradient(180deg, #0f1835, #0c152d);
+  padding: 8px 12px calc(8px + env(safe-area-inset-bottom));
+  border-top: 1px solid var(--vcb-border);
+}
+
+/* Mejor escala en móviles */
+@media (max-width: 640px) {
+  .vcb-panel {
+    inset: auto 8px 72px 8px;   /* márgenes laterales */
+    width: auto;
+    height: 65vh;               /* más bajo en móviles */
+  }
+  .vcb-messages {
+    font-size: 0.92rem;
+    line-height: 1.35;
+  }
+}
+/* === FIX dimensiones ChatBot (modal y chat) === */
+
+/* 1) El diálogo ocupa la pantalla en móvil y su fila central es elástica */
+.vam-dialog{
+  /* usar el viewport moderno y respetar notch */
+  height: 100svh;           /* soporte moderno */
+  max-height: 100svh;
+  height: 100dvh;           /* fallback adicional */
+  max-height: 100dvh;
+  padding-bottom: calc(12px + env(safe-area-inset-bottom));
+
+  /* grid con fila central elástica real (sin recortes) */
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto; /* <— clave */
+}
+
+/* 2) El contenedor de chat NO lleva alturas fijas: que crezca con 1fr */
+.vam-chat{
+  height: auto !important;
+  min-height: 0 !important;   /* permite que el overflow funcione dentro del 1fr */
+  max-height: none !important;
+  overflow: auto;
+}
+
+/* 3) El wrapper de input pegado abajo no “empuja” al abrir teclado */
+.vam-input{
+  position: sticky;
+  bottom: 0;
+  background: #fff;
+}
+
+/* 4) Desktop: el modal es más compacto pero el chat sigue elástico */
+@media (min-width:640px){
+  .vam-dialog{
+    margin: 40px auto;
+    height: auto;
+    max-height: min(90svh, 90vh);
+    max-width: min(680px, 92vw);
+    border-radius: 14px;
+    box-shadow: 0 24px 70px rgba(0,0,0,.35);
+    grid-template-rows: auto minmax(0, 1fr) auto; /* reafirmamos */
+  }
+}
+
+/* 5) (Opcional) Scroll más suave y sin rebote en iOS */
+.vam-chat{
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+}
+/* Colores básicos */
+.sw[data-color="Negro"]{ background:#111; }
+.sw[data-color="Blanco"]{ background:#fff; border-color:#aaa; }
+.sw[data-color="Azul"]{ background:var(--primary); }
+.sw[data-color="Rojo"]{ background:#ef4444; }
+.sw[data-color="Rosa"]{ background:#ec4899; }
+.sw[data-color="Verde"]{ background:#10b981; }
+.sw[data-color="Beige"]{ background:#f5f5dc; }
+.sw[data-color="Café"], .sw[data-color="CAFE"]{ background:#7b4a2e; }
+.sw[data-color="Acua"], .sw[data-color="ACUA"], .sw[data-color="celeste"]{ background:#3ddad7; }
+.sw[data-color="Naranja"]{ background:#ff7700; }
+.sw[data-color="Lila"]{ background:#c084fc; }
+
+/* Bicolores / Tricolores */
+.sw[data-color="lila-negro"]{ background:linear-gradient(90deg,#c084fc 50%,#000 50%); }
+.sw[data-color="rosa-celeste"]{ background:linear-gradient(90deg,#ec4899 50%,#21cbff 50%); }
+.sw[data-color="salmon-beige"]{ background:linear-gradient(90deg,#fa8072 50%,#dedac9 50%); }
+.sw[data-color="salmon-beige-rosa"], .sw[data-color="Salmon-Beige-rosa"]{
+  background:linear-gradient(45deg,#fa8072 0% 33.3%,#dedac9 33.3% 66.6%,#faa89f 66.6% 100%);
+}
+.sw[data-color="rosa-beige-rosita"]{
+  background:linear-gradient(45deg,#ec4899 0% 33.3%,#dedac9 33.3% 66.6%,#f8bad2 66.6% 100%);
+}
+.sw[data-color="rosa-rosita"]{ background:linear-gradient(90deg,#ec4899 50%,#ff8fd8 50%); }
