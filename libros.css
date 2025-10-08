@@ -1469,3 +1469,14 @@ body{ color:var(--ink); background:var(--bg); }
   background:linear-gradient(45deg,#ec4899 0% 33.3%,#dedac9 33.3% 66.6%,#f8bad2 66.6% 100%);
 }
 .sw[data-color="rosa-rosita"]{ background:linear-gradient(90deg,#ec4899 50%,#ff8fd8 50%); }
+@media (max-width: 768px){
+  .menu-toggle{ display:block; }
+  .nav{
+    position:absolute; right:0; top:60px;
+    display:flex; flex-direction:column;
+    background:var(--azul-900); width:220px;
+    transform:translateX(100%); transition:transform .28s ease;
+    padding:.8rem 0;
+  }
+  .nav.open{ transform:translateX(0); }
+}
