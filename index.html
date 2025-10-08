@@ -1077,21 +1077,6 @@ window.openAdvisor = (pref={})=>{
 
 <!-- ===================== JS EMBEBIDO: slider + menú + asesor ===================== -->
 <script>
-/* ===== Menú móvil simple ===== */
-(function(){
-  const btn = document.querySelector('.menu-toggle');
-  const nav = document.getElementById('nav');
-  const backdrop = document.querySelector('.nav-backdrop');
-  if(!btn || !nav || !backdrop) return;
-  function close(){ nav.classList.remove('open'); backdrop.hidden = true; btn.setAttribute('aria-expanded','false'); }
-  btn.addEventListener('click', () => {
-    const open = nav.classList.toggle('open');
-    backdrop.hidden = !open;
-    btn.setAttribute('aria-expanded', String(open));
-  });
-  backdrop.addEventListener('click', close);
-  window.addEventListener('resize', () => { if (window.innerWidth > 860) close(); });
-})();
 
 /* ===== Slider hero robusto ===== */
 (function(){
@@ -1166,6 +1151,7 @@ window.openAdvisor = (pref={})=>{
 </script>
 </body>
 </html>
+
 
 
 
