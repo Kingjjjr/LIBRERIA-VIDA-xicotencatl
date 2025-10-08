@@ -1444,8 +1444,27 @@
     });
   })();
   </script>
+<script>
+  (function(){
+    const btn = document.querySelector('.menu-toggle');
+    const nav = document.getElementById('nav');
+    if(!btn || !nav) return;
+    btn.addEventListener('click', () => {
+      const open = nav.classList.toggle('open');
+      btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+    // Cerrar al tocar un enlace (opcional)
+    nav.addEventListener('click', e => {
+      if (e.target.tagName === 'A') {
+        nav.classList.remove('open');
+        btn.setAttribute('aria-expanded','false');
+      }
+    });
+  })();
+</script>
 
 </body>
 </html>
+
 
 
